@@ -37,16 +37,16 @@ void main(void) {
 
     setup_irq();
 
-    unsigned short i;
-    for (i = 0x4000; i < 0x5800; i++) {
-	* (volatile unsigned char *) i = i & 0x100 ? 0xaa : 0x55;
+    unsigned short addr;
+    for (addr = 0x4000; addr < 0x5800; addr++) {
+	MEM(addr) = addr & 0x100 ? 0xaa : 0x55;
     }
-    for (i = 0x5800; i < 0x5900; i++) {
-	* (volatile unsigned char *) i = i & 0xff;
+    for (addr = 0x5800; addr < 0x5b00; addr++) {
+	MEM(addr) = 0x47;
     }
 
     signed char d = 1;
-    unsigned short r = 200;
+    unsigned short i, r = 200;
     while (1) {
 	out_fe(0x10);
 	for (i = 0; i < r; i++) { }
