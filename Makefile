@@ -7,7 +7,7 @@ all:
 	./bin2tap.sh zlalox
 
 run: all
-	fuse -g 2x zlalox.tap
+	fuse --no-confirm-actions -g 2x zlalox.tap
 
 clean:
 	rm -f zlalox*
