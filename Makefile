@@ -6,5 +6,8 @@ all:
 	hex2bin zlalox.ihx > /dev/null
 	./bin2tap.sh zlalox
 
+run: all
+	fuse -g 2x zlalox.tap
+
 clean:
 	rm -f zlalox*
