@@ -191,9 +191,18 @@ static void wait_vblank(void) {
     while (!vblank) { }
 }
 
+static void scroll_snow(void) {
+}
+
+static void next_pattern(void) {
+}
+
 void game_loop(void) {
+    wait_vblank();
+    next_pattern();
     for (;;) {
 	control();
+	scroll_snow();
 	draw_player(1);
 	wait_vblank();
 	draw_player(0);
