@@ -32,6 +32,13 @@ static void out_fe(byte a) {
     __asm__("out (#0xfe), a"); a;
 }
 
+static void slow_pixel(byte x, byte y) {
+    y = ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
+    word addr = (y << 5) + (x >> 3);
+    byte pixel = 0x80 >> (x & 7);
+    BYTE(0x4000 + addr) ^= pixel;
+}
+
 void main(void) {
     __asm__("ld sp, #0xFDFC");
 
