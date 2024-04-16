@@ -88,11 +88,14 @@ static const word pixels[] = {
     0x000A, 0x0005, 0x8002, 0x4001
 };
 
+static byte detect, collision;
 static void draw_straight(void) {
     word addr = 0x5180 + (pos >> 3);
     word data = pixels[pos & 0x07];
     for (byte n = 0; n < 5; n++) {
-	WORD(addr) ^= data;
+	word screen = WORD(addr);
+	if (detect && (screen & data)) collision = 1;
+	WORD(addr) = screen ^ data;
 	addr += 0x100;
     }
 }
@@ -123,13 +126,18 @@ static void draw_side(byte x, word data) {
     data += (x & 0x07) << 3;
     word addr = 0x5280 + (x >> 3);
     for (byte n = 0; n < 4; n++) {
-	WORD(addr) ^= WORD(data);
+	word screen = WORD(addr);
+	word sprite = WORD(data);
+	if (detect && (screen & sprite)) collision = 1;
+	WORD(addr) = screen ^ sprite;
 	addr += 0x100;
 	data += 0x02;
     }
 }
 
-static void draw_player(void)  {
+static void draw_player(byte check)  {
+    detect = check;
+    collision = 0;
     switch (dir) {
     case -1:
 	draw_side(pos, ADDR(pixels_L));
@@ -148,13 +156,17 @@ static void init_variables(void) {
     dir = 0;
 }
 
+static void wait_vblank(void) {
+    vblank = 0;
+    while (!vblank) { }
+}
+
 void game_loop(void) {
     for (;;) {
 	control();
-	draw_player();
-	vblank = 0;
-	while (!vblank) { }
-	draw_player();
+	draw_player(1);
+	wait_vblank();
+	draw_player(0);
     }
 }
 
