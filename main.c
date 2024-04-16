@@ -108,26 +108,34 @@ static const word pixels_L[] = {
     0x4001, 0x4001, 0xA000, 0x5000
 };
 
-static void draw_left(void) {
-    byte i = (pos & 0x07) << 2;
-    word addr = 0x5280 + (pos >> 3);
-    for (byte n = 0; n < 4; n++) {
-	WORD(addr) ^= pixels_L[i++];
-	addr += 0x100;
-    }
-}
+static const word pixels_R[] = {
+    0x0028, 0x0028, 0x0050, 0x00A0,
+    0x0014, 0x0014, 0x0028, 0x0050,
+    0x000A, 0x000A, 0x0014, 0x0028,
+    0x0005, 0x0005, 0x000A, 0x0014,
+    0x8002, 0x8002, 0x0005, 0x000A,
+    0x4001, 0x4001, 0x8002, 0x0005,
+    0xA000, 0xA000, 0x4001, 0x8002,
+    0x5000, 0x5000, 0xA000, 0x4001
+};
 
-static void draw_right(void) {
-    draw_straight();
+static void draw_side(byte x, word data) {
+    data += (x & 0x07) << 3;
+    word addr = 0x5280 + (x >> 3);
+    for (byte n = 0; n < 4; n++) {
+	WORD(addr) ^= WORD(data);
+	addr += 0x100;
+	data += 0x02;
+    }
 }
 
 static void draw_player(void)  {
     switch (dir) {
     case -1:
-	draw_left();
+	draw_side(pos, ADDR(pixels_L));
 	break;
     case +1:
-	draw_right();
+	draw_side(pos - 2, ADDR(pixels_R));
 	break;
     default:
 	draw_straight();
