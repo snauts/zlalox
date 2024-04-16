@@ -74,12 +74,8 @@ static byte pos;
 static int8 dir;
 static void control(void) {
     dir = 0;
-    if (press_z()) {
-	dir = -1;
-    }
-    if (press_x()) {
-	dir = +1;
-    }
+    if (press_z()) dir--;
+    if (press_x()) dir++;
     pos += dir;
 }
 
