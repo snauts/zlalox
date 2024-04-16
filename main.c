@@ -12,13 +12,13 @@ static void interrupt(void) __naked {
 }
 
 static void memset(word addr, byte data, word len) {
-    while (len-- > 0) { MEM(addr++) = data; }
+    while (len-- > 0) { BYTE(addr++) = data; }
 }
 
 static void setup_irq(void) {
     __asm__("di");
-    MEM(0xfdfd) = 0xc3;
-    M16(0xfdfe) = ADDR(&interrupt);
+    BYTE(0xfdfd) = 0xc3;
+    WORD(0xfdfe) = ADDR(&interrupt);
     memset(0xfe00, 0xfd, 0x101);
     __asm__("push af");
     __asm__("ld a, #0xfe");
