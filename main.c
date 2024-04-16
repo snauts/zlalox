@@ -82,6 +82,46 @@ static void control(void) {
     pos += dir;
 }
 
+static const byte pixels[] = {
+    0xA0, 0x00, 0x50, 0x00, 0x28, 0x00, 0x14, 0x00,
+    0x0A, 0x00, 0x05, 0x00, 0x02, 0x80, 0x01, 0x40
+};
+
+static void draw_straight(void) {
+    word addr = 0x5180 + (pos >> 3);
+    byte i = (pos & 0x07) << 1;
+    byte p0 = pixels[i + 0];
+    byte p1 = pixels[i + 1];
+    for (byte n = 0; n < 5; n++) {
+	BYTE(addr) ^= p0;
+	addr += 0x01;
+	BYTE(addr) ^= p1;
+	addr += 0xff;
+    }
+}
+
+static void draw_left(void) {
+    draw_straight();
+}
+
+static void draw_right(void) {
+    draw_straight();
+}
+
+static void draw_player(void)  {
+    switch (dir) {
+    case -1:
+	draw_left();
+	break;
+    case +1:
+	draw_right();
+	break;
+    default:
+	draw_straight();
+	break;
+    }
+}
+
 static void init_variables(void) {
     pos = 127;
     dir = 0;
@@ -90,10 +130,10 @@ static void init_variables(void) {
 void game_loop(void) {
     for (;;) {
 	control();
-	slow_pixel(pos, 168);
+	draw_player();
 	vblank = 0;
 	while (!vblank) { }
-	slow_pixel(pos, 168);
+	draw_player();
     }
 }
 
