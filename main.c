@@ -45,14 +45,10 @@ static byte press_x(void) {
     return !(in_fe(0xfe) & 0x04);
 }
 
-static byte fix_y(byte y) {
-    return ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
-}
+static word map_y[192];
 
 static void slow_pixel(byte x, byte y) {
-    word addr = (fix_y(y) << 5) + (x >> 3);
-    byte pixel = 0x80 >> (x & 7);
-    BYTE(0x4000 + addr) ^= pixel;
+    BYTE(map_y[y] + (x >> 3)) ^= 0x80 >> (x & 7);
 }
 
 static void clear_screen(void) {
@@ -74,6 +70,7 @@ static void track_border(void) {
 }
 
 static void error_at(const char *msg, byte y) {
+    y = y << 3;
     byte done = 0;
     for (byte x = 0; x < 10; x++) {
 	word addr = 0x3C00;
@@ -81,10 +78,9 @@ static void error_at(const char *msg, byte y) {
 	if (symbol == 0) done = 1;
 	addr += (done ? 0x100 : (symbol << 3));
 	for (byte i = 0; i < 8; i++) {
-	    byte fy = fix_y((y << 3) + i);
-	    BYTE(0x4000 + (fy << 5) + x) = BYTE(addr + i);
+	    BYTE(map_y[y + i] + x) = BYTE(addr + i);
 	}
-	BYTE(0x5800 + (y << 5) + x) = 0x07;
+	BYTE(0x5800 + (y << 2) + x) = 0x07;
     }
 }
 
@@ -209,10 +205,18 @@ void game_loop(void) {
     }
 }
 
+void prepare(void) {
+    for (byte y = 0; y < 192; y++) {
+	byte f = ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
+	map_y[y] = 0x4000 + (f << 5);
+    }
+}
+
 void main(void) {
     __asm__("ld sp, #0xFDFC");
 
     setup_irq();
+    prepare();
 
     for (;;) {
 	clear_screen();
