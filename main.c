@@ -40,8 +40,8 @@ void main(void) {
     memset(0x4000, 0xc0, 0x1800);
     memset(0x5800, 0x47, 0x0300);
 
-    signed char d = 1;
-    unsigned short i, r = 200;
+    int8 d = 1;
+    word i, r = 200;
     while (1) {
 	out_fe(0x10);
 	for (i = 0; i < r; i++) { }
