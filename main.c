@@ -45,9 +45,12 @@ static byte press_x(void) {
     return !(in_fe(0xfe) & 0x04);
 }
 
+static byte fix_y(byte y) {
+    return ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
+}
+
 static void slow_pixel(byte x, byte y) {
-    y = ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
-    word addr = (y << 5) + (x >> 3);
+    word addr = (fix_y(y) << 5) + (x >> 3);
     byte pixel = 0x80 >> (x & 7);
     BYTE(0x4000 + addr) ^= pixel;
 }
@@ -68,6 +71,28 @@ static void track_border(void) {
 	BYTE(addr + 0x07) = 0x03;
 	BYTE(addr + 0x18) = 0xC0;
     }
+}
+
+static void error_at(const char *msg, byte y) {
+    byte done = 0;
+    for (byte x = 0; x < 7; x++) {
+	word addr = 0x3C00;
+	char symbol = msg[x];
+	if (symbol == 0) done = 1;
+	addr += (done ? 0x100 : (symbol << 3));
+	for (byte i = 0; i < 8; i++) {
+	    byte fy = fix_y((y << 3) + i);
+	    BYTE(0x4000 + (fy << 5) + x) = BYTE(addr + i);
+	}
+	BYTE(0x5800 + (y << 5) + x) = 0x07;
+    }
+}
+
+static byte err;
+static void error_str(const char *msg) {
+    error_at(msg, err);
+    if (++err >= 24) err = 0;
+    error_at("-------", err);
 }
 
 static byte pos;
@@ -145,11 +170,13 @@ static void draw_player(byte check)  {
 	draw_straight();
 	break;
     }
+    if (collision) error_str("HIT!");
 }
 
 static void init_variables(void) {
     pos = 127;
     dir = 0;
+    err = 0;
 }
 
 static void wait_vblank(void) {
