@@ -69,18 +69,31 @@ static void track_border(void) {
     }
 }
 
-static void sound_wave(void) {
-    int8 d = 1;
-    word i, r = 200;
-    while (1) {
-	out_fe(0x10);
-	for (i = 0; i < r; i++) { }
-	out_fe(0x00);
-	for (i = 0; i < r; i++) { }
+static byte pos;
+static int8 dir;
+static void control(void) {
+    dir = 0;
+    if (press_z()) {
+	dir = -1;
+    }
+    if (press_x()) {
+	dir = +1;
+    }
+    pos += dir;
+}
 
-	r = r + d;
-	if (r == 100) d = +1;
-	if (r == 300) d = -1;
+static void init_variables(void) {
+    pos = 127;
+    dir = 0;
+}
+
+void game_loop(void) {
+    for (;;) {
+	control();
+	slow_pixel(pos, 168);
+	vblank = 0;
+	while (!vblank) { }
+	slow_pixel(pos, 168);
     }
 }
 
@@ -89,7 +102,8 @@ void main(void) {
 
     setup_irq();
     clear_screen();
+    init_variables();
     track_border();
     track_color();
-    sound_wave();
+    game_loop();
 }
