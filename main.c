@@ -213,9 +213,13 @@ void main(void) {
     __asm__("ld sp, #0xFDFC");
 
     setup_irq();
-    clear_screen();
-    init_variables();
-    track_border();
-    track_color();
-    game_loop();
+
+    for (;;) {
+	clear_screen();
+	init_variables();
+	track_border();
+	track_color();
+
+	game_loop();
+    }
 }
