@@ -39,13 +39,30 @@ static void slow_pixel(byte x, byte y) {
     BYTE(0x4000 + addr) ^= pixel;
 }
 
+static void clear_screen(void) {
+    memset(0x4000, 0x00, 0x1B00);
+}
+
+static void track_color(void) {
+    memset(0x5800, 0x01, 0x300);
+    memset(0x5880, 0x05, 0x260);
+    memset(0x5900, 0x07, 0x1C0);
+}
+
+static void track_border(void) {
+    for (word addr = 0x4000; addr < 0x5800; addr += 0x20) {
+	BYTE(addr + 0x07) = 0x03;
+	BYTE(addr + 0x18) = 0xC0;
+    }
+}
+
 void main(void) {
     __asm__("ld sp, #0xFDFC");
 
     setup_irq();
-
-    memset(0x4000, 0xc0, 0x1800);
-    memset(0x5800, 0x47, 0x0300);
+    clear_screen();
+    track_border();
+    track_color();
 
     int8 d = 1;
     word i, r = 200;
