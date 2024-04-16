@@ -68,14 +68,14 @@ static void track_color(void) {
 
 static void track_border(void) {
     for (word addr = 0x4000; addr < 0x5800; addr += 0x20) {
-	BYTE(addr + 0x07) = 0x03;
-	BYTE(addr + 0x18) = 0xC0;
+	BYTE(addr + 0x0B) = 0x03;
+	BYTE(addr + 0x14) = 0xC0;
     }
 }
 
 static void error_at(const char *msg, byte y) {
     byte done = 0;
-    for (byte x = 0; x < 7; x++) {
+    for (byte x = 0; x < 11; x++) {
 	word addr = 0x3C00;
 	char symbol = msg[x];
 	if (symbol == 0) done = 1;
@@ -92,7 +92,7 @@ static byte err;
 static void error_str(const char *msg) {
     error_at(msg, err);
     if (++err >= 24) err = 0;
-    error_at("-------", err);
+    error_at("-----------", err);
 }
 
 static char to_hex(byte digit) {
