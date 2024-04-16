@@ -95,6 +95,19 @@ static void error_str(const char *msg) {
     error_at("-------", err);
 }
 
+static char to_hex(byte digit) {
+    return (digit < 10) ? '0' + digit : 'A' + digit - 10;
+}
+
+static void error_num(word num) {
+    char msg[] = "0x0000";
+    for (byte i = 5; i >= 2; i--) {
+	msg[i] = to_hex(num & 0xf);
+	num = num >> 4;
+    }
+    error_str(msg);
+}
+
 static byte pos;
 static int8 dir;
 static void control(void) {
@@ -170,7 +183,10 @@ static void draw_player(byte check)  {
 	draw_straight();
 	break;
     }
-    if (collision) error_str("HIT!");
+    if (collision) {
+	error_str("HIT-POS");
+	error_num(pos);
+    }
 }
 
 static void init_variables(void) {
