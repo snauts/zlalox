@@ -28,8 +28,8 @@ static void setup_irq(void) {
     __asm__("ei");
 }
 
-static void out_fe(unsigned char a) {
-    __asm__("out (#0xfe), a");
+static void out_fe(byte a) {
+    __asm__("out (#0xfe), a"); a;
 }
 
 void main(void) {
