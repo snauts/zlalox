@@ -56,14 +56,7 @@ static void track_border(void) {
     }
 }
 
-void main(void) {
-    __asm__("ld sp, #0xFDFC");
-
-    setup_irq();
-    clear_screen();
-    track_border();
-    track_color();
-
+static void sound_wave(void) {
     int8 d = 1;
     word i, r = 200;
     while (1) {
@@ -76,4 +69,14 @@ void main(void) {
 	if (r == 100) d = +1;
 	if (r == 300) d = -1;
     }
+}
+
+void main(void) {
+    __asm__("ld sp, #0xFDFC");
+
+    setup_irq();
+    clear_screen();
+    track_border();
+    track_color();
+    sound_wave();
 }
