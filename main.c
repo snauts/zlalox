@@ -1,5 +1,7 @@
 #include "main.h"
 
+#define BORDER 10
+
 static volatile byte vblank;
 static void interrupt(void) __naked {
     __asm__("di");
@@ -64,15 +66,15 @@ static void track_color(void) {
 
 static void track_border(void) {
     for (word addr = 0x4000; addr < 0x5800; addr += 0x20) {
-	BYTE(addr + 0x0A) = 0x03;
-	BYTE(addr + 0x15) = 0xC0;
+	BYTE(addr + 31 - BORDER) = 0xC0;
+	BYTE(addr + BORDER) = 0x03;
     }
 }
 
 static void error_at(const char *msg, byte y) {
     y = y << 3;
     byte done = 0;
-    for (byte x = 0; x < 10; x++) {
+    for (byte x = 0; x < BORDER; x++) {
 	word addr = 0x3C00;
 	char symbol = msg[x];
 	if (symbol == 0) done = 1;
@@ -88,7 +90,7 @@ static byte err;
 static void error_str(const char *msg) {
     error_at(msg, err);
     if (++err >= 24) err = 0;
-    error_at("----------", err);
+    error_at("----------------", err);
 }
 
 static char to_hex(byte digit) {
