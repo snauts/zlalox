@@ -32,6 +32,19 @@ static void out_fe(byte a) {
     __asm__("out (#0xfe), a"); a;
 }
 
+static byte in_fe(byte a) __naked {
+    __asm__("in a, (#0xfe)"); a;
+    __asm__("ret");
+}
+
+static byte press_z(void) {
+    return !(in_fe(0xfe) & 0x02);
+}
+
+static byte press_x(void) {
+    return !(in_fe(0xfe) & 0x04);
+}
+
 static void slow_pixel(byte x, byte y) {
     y = ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
     word addr = (y << 5) + (x >> 3);
