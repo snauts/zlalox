@@ -1,2 +1,6 @@
-#define MEM(addr) (* (volatile unsigned char *) (addr))
-#define ADDR(obj) ((unsigned short) (obj))
+typedef unsigned char byte;
+typedef unsigned short word;
+
+#define MEM(addr) (* (volatile byte *) (addr))
+#define M16(addr) (* (volatile word *) (addr))
+#define ADDR(obj) ((word) (obj))
