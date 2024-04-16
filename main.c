@@ -39,14 +39,6 @@ static byte in_fe(byte a) __naked {
     __asm__("ret");
 }
 
-static byte press_z(void) {
-    return !(in_fe(0xfe) & 0x02);
-}
-
-static byte press_x(void) {
-    return !(in_fe(0xfe) & 0x04);
-}
-
 static word map_y[192];
 
 static void slow_pixel(byte x, byte y) {
@@ -109,9 +101,10 @@ static void error_num(word num) {
 static byte pos;
 static int8 dir;
 static void control(void) {
+    byte port = in_fe(0xfe);
     dir = 0;
-    if (press_z()) dir--;
-    if (press_x()) dir++;
+    if ((port & 2) == 0) dir--;
+    if ((port & 4) == 0) dir++;
     pos += dir;
 }
 
