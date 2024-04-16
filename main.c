@@ -82,21 +82,16 @@ static void control(void) {
     pos += dir;
 }
 
-static const byte pixels[] = {
-    0xA0, 0x00, 0x50, 0x00, 0x28, 0x00, 0x14, 0x00,
-    0x0A, 0x00, 0x05, 0x00, 0x02, 0x80, 0x01, 0x40
+static const word pixels[] = {
+    0x00A0, 0x0050, 0x0028, 0x0014, 0x000A, 0x0005, 0x8002, 0x4001
 };
 
 static void draw_straight(void) {
     word addr = 0x5180 + (pos >> 3);
-    byte i = (pos & 0x07) << 1;
-    byte p0 = pixels[i + 0];
-    byte p1 = pixels[i + 1];
+    word data = pixels[pos & 0x07];
     for (byte n = 0; n < 5; n++) {
-	BYTE(addr) ^= p0;
-	addr += 0x01;
-	BYTE(addr) ^= p1;
-	addr += 0xff;
+	WORD(addr) ^= data;
+	addr += 0x100;
     }
 }
 
