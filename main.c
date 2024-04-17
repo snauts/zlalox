@@ -233,6 +233,7 @@ struct Level {
 };
 
 static const struct Level level_list[] = {
+    { level_snow, sizeof(level_snow) },
     { level_path, sizeof(level_path) },
 };
 
@@ -245,7 +246,7 @@ static void end_game(void) {
 static void next_pattern(byte inc) {
     level += inc;
     if (SIZE(level_list) == level) end_game();
-    struct Level *next = level_list + level;
+    const struct Level *next = level_list + level;
     segment = next->ptr + next->size;
     pattern = next->ptr;
     counter = 0;
