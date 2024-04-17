@@ -221,14 +221,33 @@ static void game_vblank(void) {
 }
 
 
+static byte level;
 static const byte *pattern;
 static const byte *segment;
 
 static void scroll_back(void);
 
-static void next_pattern(void) {
-    segment = level_path + sizeof(level_path);
-    pattern = level_path;
+struct Level {
+    byte *ptr;
+    word size;
+};
+
+static const struct Level level_list[] = {
+    { level_path, sizeof(level_path) },
+};
+
+static void end_game(void) {
+    clear_screen();
+    put_str("GAME OVER", 11, 11, 5);
+    for(;;) { wait_vblank(); }
+}
+
+static void next_pattern(byte inc) {
+    level += inc;
+    if (SIZE(level_list) == level) end_game();
+    struct Level *next = level_list + level;
+    segment = next->ptr + next->size;
+    pattern = next->ptr;
     counter = 0;
     scroll_back();
 }
@@ -245,7 +264,7 @@ static void scroll_back(void) {
 	}
     }
     if (counter > 224) {
-	next_pattern();
+	next_pattern(1);
     }
 }
 
@@ -304,7 +323,7 @@ static void death_loop(void) {
 
 static void game_loop(void) {
     wait_vblank();
-    next_pattern();
+    next_pattern(0);
     for (;;) {
 	control();
 	scroll_snow();
@@ -353,6 +372,7 @@ void main(void) {
     init_variables();
     display_title();
 
+    level = 0;
     while (!dir) control();
 
     for (;;) {
