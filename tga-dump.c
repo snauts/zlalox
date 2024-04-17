@@ -72,8 +72,9 @@ int main(int argc, char **argv) {
     unsigned char row[WIDTH];
     memset(row, 0, sizeof(row));
 
-    unsigned size = 0;
-    unsigned char out[WIDTH * header.h * 3];
+    unsigned size = 3;
+    unsigned char out[(WIDTH * header.h + 1) * 3];
+    memset(out, 0, size); /* zero for termination */
 
     for (int y = header.h - 1; y >= 0; y--) {
 	unsigned char *ptr = buf[y];
