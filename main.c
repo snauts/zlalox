@@ -295,7 +295,17 @@ static void prepare(void) {
 }
 
 static void display_title(void) {
+    word i = 0, j = 0;
     put_str("Press Z or X", 10, 16, 5);
+    for (byte y = 64; y < 104; y++) {
+	for (byte x = 4; x < 28; x++) {
+	    BYTE(map_y[y] + x) = title[i++];
+	    if ((y & 7) == 0) {
+		word addr = 0x5800 + (y << 2) + x;
+		BYTE(addr) = title_color[j++];
+	    }
+	}
+    }
 }
 
 void main(void) {
