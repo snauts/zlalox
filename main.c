@@ -313,7 +313,6 @@ static void game_loop(void) {
 	draw_player(0);
 	if (collision) {
 	    error_str("COLLISION");
-	    error_num(pos);
 	    death_loop();
 	    break;
 	}
