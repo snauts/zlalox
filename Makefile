@@ -16,4 +16,4 @@ run: all
 	fuse --no-confirm-actions -g 2x zlalox.tap
 
 clean:
-	rm -f zlalox*
+	rm -f zlalox* level.h tga-dump
