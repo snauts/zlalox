@@ -19,12 +19,13 @@ struct Header {
 };
 
 static void save_level(struct Header *header, unsigned char *buf);
+static void save_bitmap(struct Header *header, unsigned char *buf);
 
 static unsigned char consume_pixels(unsigned char *buf) {
     unsigned char ret = 0;
     for (int i = 0; i < 8; i++) {
 	ret = ret << 1;
-	if (buf[i] > 0) {
+	if (buf[i] >= 128) {
 	    ret |= 1;
 	}
     }
@@ -80,6 +81,7 @@ int main(int argc, char **argv) {
 	save_level(&header, buf);
 	break;
     case 'b':
+	save_bitmap(&header, buf);
 	break;
     }
 
@@ -125,6 +127,18 @@ static void save_level(struct Header *header, unsigned char *buf) {
 	    printf(" 0x%02x,", out[i + j]);
 	}
 	printf("\n");
+    }
+    printf("};\n");
+}
+
+static void save_bitmap(struct Header *header, unsigned char *buf) {
+    char name[256];
+    int size = header->w * header->h;
+    remove_extension(file_name, name);
+    printf("const byte %s[%d] = {\n", name, size / 8);
+    for (int i = 0; i < size; i += 8) {
+	printf(" 0x%02x,", consume_pixels(buf + i));
+	if ((i % 64) == 56) printf("\n");
     }
     printf("};\n");
 }
