@@ -34,7 +34,12 @@ static void remove_extension(char *src, char *dst) {
 	    dst[i] = 0;
 	    return;
 	}
-	dst[i] = src[i];
+	else if (src[i] == '/') {
+	    dst[i] = '_';
+	}
+	else {
+	    dst[i] = src[i];
+	}
     }
 }
 
