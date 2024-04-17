@@ -5,6 +5,8 @@
 
 #define BORDER 10
 
+void main(void);
+
 static volatile byte vblank;
 static void interrupt(void) __naked {
     __asm__("di");
@@ -117,6 +119,10 @@ static void control(void) {
     if ((port & 2) == 0) dir--;
     if ((port & 4) == 0) dir++;
     pos += dir;
+}
+
+static void wait_for_button(void) {
+    do { control(); } while (!dir);
 }
 
 static byte detect, collision;
@@ -240,7 +246,8 @@ static const struct Level level_list[] = {
 static void end_game(void) {
     clear_screen();
     put_str("GAME OVER", 11, 11, 5);
-    for(;;) { wait_vblank(); }
+    wait_for_button();
+    main();
 }
 
 static void next_pattern(byte inc) {
@@ -374,7 +381,7 @@ void main(void) {
     display_title();
 
     level = 0;
-    while (!dir) control();
+    wait_for_button();
 
     for (;;) {
 	clear_screen();
