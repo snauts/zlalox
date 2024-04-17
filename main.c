@@ -167,9 +167,18 @@ static void wait_vblank(void) {
     while (!vblank) { }
 }
 
-static word counter;
+static byte counter;
 static const byte *pattern;
 static const byte *segment;
+
+static void scroll_back(void);
+
+static void next_pattern(void) {
+    segment = level_path + sizeof(level_path);
+    pattern = level_path;
+    counter = 0;
+    scroll_back();
+}
 
 static void scroll_back(void) {
     while (segment > pattern) {
@@ -182,10 +191,13 @@ static void scroll_back(void) {
 	    break;
 	}
     }
+    if (counter == 0xff) {
+	next_pattern();
+    }
 }
 
 static void scroll_snow(void) {
-    byte y = counter & 0xFF;
+    byte y = counter;
     const byte *ptr = segment;
     while (y < 192 && ptr[0] > 0) {
 	BYTE(map_y[y] + ptr[0]) = ptr[2];
@@ -194,13 +206,6 @@ static void scroll_snow(void) {
     }
     counter++;
     scroll_back();
-}
-
-static void next_pattern(void) {
-    segment = level_path + sizeof(level_path);
-    pattern = level_path;
-    scroll_back();
-    counter = 0;
 }
 
 static void game_loop(void) {
