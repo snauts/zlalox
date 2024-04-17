@@ -192,7 +192,7 @@ static void jerk_vblank(void) {
     static const byte jerk_color[] = { 0, 1, 5, 7 };
     byte c = 0, s = 0;
     word i = 0, j = 0;
-    word period = 224 - counter;
+    word period = (224 - counter) >> 1;
     word width = (counter - 192) << 3;
     vblank = 0;
     while (!vblank) {
