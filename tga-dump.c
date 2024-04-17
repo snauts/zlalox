@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
@@ -16,6 +17,8 @@ struct Header {
     unsigned char depth;
     unsigned char desc;
 };
+
+static void save_level(struct Header *header, unsigned char *buf);
 
 static unsigned char consume_pixels(unsigned char *buf) {
     unsigned char ret = 0;
@@ -43,15 +46,19 @@ static void remove_extension(char *src, char *dst) {
     }
 }
 
+static char *file_name;
 int main(int argc, char **argv) {
-    if (argc != 2) {
-	printf("USAGE: tga-dump file.tga\n");
+    if (argc != 3) {
+	printf("USAGE: tga-dump [option] file.tga\n");
+	printf("  -b   save bitmap\n");
+	printf("  -l   save level\n");
 	return 0;
     }
 
-    int fd = open(argv[1], O_RDONLY);
+    file_name = argv[2];
+    int fd = open(file_name, O_RDONLY);
     if (fd < 0) {
-	printf("ERROR: unable to open %s\n", argv[1]);
+	printf("ERROR: unable to open %s\n", file_name);
 	return -ENOENT;
     }
 
@@ -63,26 +70,38 @@ int main(int argc, char **argv) {
 	close(fd);
 	return 0;
     }
-    if (header.w != WIDTH * 8) {
-	printf("ERROR: bad width %d, expected %d\n", header.w, WIDTH * 8);
-	close(fd);
-	return 0;
-    }
 
-    unsigned char buf[header.h][header.w];
+    unsigned char buf[header.h * header.w];
     read(fd, buf, header.w * header.h);
     close(fd);
+
+    switch (argv[1][1]) {
+    case 'l':
+	save_level(&header, buf);
+	break;
+    case 'b':
+	break;
+    }
+
+    return 0;
+}
+
+static void save_level(struct Header *header, unsigned char *buf) {
+    if (header->w != WIDTH * 8) {
+	printf("ERROR: bad width %d, expected %d\n", header->w, WIDTH * 8);
+	exit(-1);
+    }
 
     unsigned height = 0;
     unsigned char row[WIDTH];
     memset(row, 0, sizeof(row));
 
     unsigned size = 3;
-    unsigned char out[(WIDTH * header.h + 1) * 3];
+    unsigned char out[(WIDTH * header->h + 1) * 3];
     memset(out, 0, size); /* zero for termination */
 
-    for (int y = header.h - 1; y >= 0; y--) {
-	unsigned char *ptr = buf[y];
+    for (int y = header->h - 1; y >= 0; y--) {
+	unsigned char *ptr = buf + y * header->w;
 	for (int i = 0; i < WIDTH; i++) {
 	    unsigned char pixels = consume_pixels(ptr);
 	    if (row[i] != pixels) {
@@ -99,7 +118,7 @@ int main(int argc, char **argv) {
     }
 
     char name[256];
-    remove_extension(argv[1], name);
+    remove_extension(file_name, name);
     printf("const byte %s[%d] = {\n", name, size);
     for (int i = size - 3; i >= 0; i -= 3) {
 	for (int j = 0; j < 3; j++) {
@@ -108,5 +127,4 @@ int main(int argc, char **argv) {
 	printf("\n");
     }
     printf("};\n");
-    return 0;
 }
