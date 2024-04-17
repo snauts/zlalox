@@ -25,3 +25,6 @@ static const word pixels_R[] = {
     0x5000, 0x5000, 0xA000, 0x4001
 };
 
+static const int8 rotate[] = {
+    0, +1, +1, +1, +1, 0, +1, -1, 0, -1, -1, -1, -1, 0, -1, +1
+};

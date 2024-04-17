@@ -138,7 +138,6 @@ static void draw_side(byte x, word data) {
 
 static void draw_player(byte check)  {
     detect = check;
-    collision = 0;
     switch (dir) {
     case -1:
 	draw_side(pos, ADDR(pixels_L));
@@ -150,13 +149,10 @@ static void draw_player(byte check)  {
 	draw_straight();
 	break;
     }
-    if (collision) {
-	error_str("HIT-POS");
-	error_num(pos);
-    }
 }
 
 static void init_variables(void) {
+    collision = 0;
     pos = 127;
     dir = 0;
     err = 0;
@@ -208,6 +204,46 @@ static void scroll_snow(void) {
     scroll_back();
 }
 
+static void draw_ski(byte x, byte y, byte angle) {
+    int8 dx = rotate[angle + 0];
+    int8 dy = rotate[angle + 1];
+    x -= dx;
+    y -= dy;
+    for (byte i = 0; i < 4; i++) {
+	slow_pixel(x, y);
+	x += dx;
+	y += dy;
+    }
+}
+
+static void death_loop(void) {
+    byte x1 = pos + 0;
+    byte y1 = 163;
+    byte x2 = pos + 2;
+    byte y2 = 163;
+    counter = 0;
+    for (;;) {
+	byte angle1 = counter & 0xe;
+	byte angle2 = 14 - angle1;
+	draw_ski(x1, y1, angle1);
+	draw_ski(x2, y2, angle2);
+	if (counter > 16) break;
+	wait_vblank();
+
+	draw_ski(x1, y1, angle1);
+	draw_ski(x2, y2, angle2);
+	x1--; x2++;
+	if (counter & 1) {
+	    y1 -= dir;
+	    y2 += dir;
+	}
+	counter++;
+    }
+    while (counter++ < 32) {
+	wait_vblank();
+    }
+}
+
 static void game_loop(void) {
     wait_vblank();
     next_pattern();
@@ -217,6 +253,10 @@ static void game_loop(void) {
 	draw_player(1);
 	wait_vblank();
 	draw_player(0);
+	if (collision) {
+	    death_loop();
+	    break;
+	}
     }
 }
 
