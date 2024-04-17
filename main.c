@@ -294,16 +294,19 @@ static void prepare(void) {
     }
 }
 
+#define TITLE_X		4
+#define TITLE_Y		64
 static void display_title(void) {
     word i = 0, j = 0;
     put_str("Press Z or X", 10, 16, 5);
-    for (byte y = 64; y < 104; y++) {
-	for (byte x = 4; x < 28; x++) {
+    for (byte y = TITLE_Y; y < TITLE_Y + 40; y++) {
+	for (byte x = TITLE_X; x < TITLE_X + 24; x++) {
 	    BYTE(map_y[y] + x) = title[i++];
-	    if ((y & 7) == 0) {
-		word addr = 0x5800 + (y << 2) + x;
-		BYTE(addr) = title_color[j++];
-	    }
+	}
+    }
+    for (byte y = TITLE_Y; y < TITLE_Y + 40; y += 8) {
+	for (byte x = TITLE_X; x < TITLE_X + 24; x++) {
+	    BYTE(0x5800 + (y << 2) + x) = title_color[j++];
 	}
     }
 }
