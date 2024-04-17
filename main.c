@@ -1,4 +1,5 @@
 #include "main.h"
+#include "data.h"
 
 #define BORDER 10
 
@@ -108,11 +109,6 @@ static void control(void) {
     pos += dir;
 }
 
-static const word pixels[] = {
-    0x00A0, 0x0050, 0x0028, 0x0014,
-    0x000A, 0x0005, 0x8002, 0x4001
-};
-
 static byte detect, collision;
 static void draw_straight(void) {
     word addr = 0x5180 + (pos >> 3);
@@ -124,28 +120,6 @@ static void draw_straight(void) {
 	addr += 0x100;
     }
 }
-
-static const word pixels_L[] = {
-    0x00A0, 0x00A0, 0x0050, 0x0028,
-    0x0050, 0x0050, 0x0028, 0x0014,
-    0x0028, 0x0028, 0x0014, 0x000A,
-    0x0014, 0x0014, 0x000A, 0x0005,
-    0x000A, 0x000A, 0x0005, 0x8002,
-    0x0005, 0x0005, 0x8002, 0x4001,
-    0x8002, 0x8002, 0x4001, 0xA000,
-    0x4001, 0x4001, 0xA000, 0x5000
-};
-
-static const word pixels_R[] = {
-    0x0028, 0x0028, 0x0050, 0x00A0,
-    0x0014, 0x0014, 0x0028, 0x0050,
-    0x000A, 0x000A, 0x0014, 0x0028,
-    0x0005, 0x0005, 0x000A, 0x0014,
-    0x8002, 0x8002, 0x0005, 0x000A,
-    0x4001, 0x4001, 0x8002, 0x0005,
-    0xA000, 0xA000, 0x4001, 0x8002,
-    0x5000, 0x5000, 0xA000, 0x4001
-};
 
 static void draw_side(byte x, word data) {
     data += (x & 0x07) << 3;
@@ -197,7 +171,7 @@ static void scroll_snow(void) {
 static void next_pattern(void) {
 }
 
-void game_loop(void) {
+static void game_loop(void) {
     wait_vblank();
     next_pattern();
     for (;;) {
@@ -209,7 +183,7 @@ void game_loop(void) {
     }
 }
 
-void prepare(void) {
+static void prepare(void) {
     for (byte y = 0; y < 192; y++) {
 	byte f = ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
 	map_y[y] = 0x4000 + (f << 5);
