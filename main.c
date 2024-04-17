@@ -66,26 +66,34 @@ static void track_border(void) {
     }
 }
 
-static void error_at(const char *msg, byte y) {
+static void put_char(char symbol, byte x, byte y, byte color) {
     y = y << 3;
-    byte done = 0;
-    for (byte x = 0; x < BORDER; x++) {
-	word addr = 0x3C00;
-	char symbol = msg[x];
-	if (symbol == 0) done = 1;
-	addr += (done ? 0x100 : (symbol << 3));
-	for (byte i = 0; i < 8; i++) {
-	    BYTE(map_y[y + i] + x) = BYTE(addr + i);
-	}
-	BYTE(0x5800 + (y << 2) + x) = 0x07;
+    word addr = 0x3C00 + (symbol << 3);
+    for (byte i = 0; i < 8; i++) {
+	BYTE(map_y[y + i] + x) = BYTE(addr + i);
+    }
+    BYTE(0x5800 + (y << 2) + x) = color;
+}
+
+static void put_str(const char *msg, byte x, byte y, byte color) {
+    byte i = 0;
+    while (msg[i] != 0) {
+	put_char(msg[i++], x++, y, color);
+    }
+}
+
+static void put_row(char symbol, byte x, byte y, byte color, byte count) {
+    while (count-- > 0) {
+	put_char(symbol, x++, y, color);
     }
 }
 
 static byte err;
 static void error_str(const char *msg) {
-    error_at(msg, err);
+    put_row(' ', 0, err, 0, BORDER);
+    put_str(msg, 0, err, 7);
     if (++err >= 24) err = 0;
-    error_at("----------", err);
+    put_row('-', 0, err, 5, BORDER);
 }
 
 static char to_hex(byte digit) {
