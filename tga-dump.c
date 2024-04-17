@@ -122,6 +122,7 @@ static void save_level(struct Header *header, unsigned char *buf) {
     char name[256];
     remove_extension(file_name, name);
     printf("const byte %s[%d] = {\n", name, size);
+    fprintf(stderr, "%s is %d bytes\n", name, size);
     for (int i = size - 3; i >= 0; i -= 3) {
 	for (int j = 0; j < 3; j++) {
 	    printf(" 0x%02x,", out[i + j]);
