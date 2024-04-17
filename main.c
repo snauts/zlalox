@@ -163,6 +163,22 @@ static void wait_vblank(void) {
     while (!vblank) { }
 }
 
+static void vblank_delay(word ticks) {
+    for (word i = 0; i < ticks; i++) { if (vblank) break; }
+}
+
+static word ticks;
+static void crash_sound_vblank(int8 step) {
+    vblank = 0;
+    while (!vblank) {
+	out_fe(0x10);
+	vblank_delay(ticks);
+	out_fe(0x0);
+	vblank_delay(ticks);
+	ticks += step;
+    }
+}
+
 static byte counter;
 static const byte *pattern;
 static const byte *segment;
@@ -222,13 +238,14 @@ static void death_loop(void) {
     byte x2 = pos + 2;
     byte y2 = 163;
     counter = 0;
+    ticks = 100;
     for (;;) {
 	byte angle1 = counter & 0xe;
 	byte angle2 = 14 - angle1;
 	draw_ski(x1, y1, angle1);
 	draw_ski(x2, y2, angle2);
 	if (counter > 16) break;
-	wait_vblank();
+	crash_sound_vblank(20);
 
 	draw_ski(x1, y1, angle1);
 	draw_ski(x2, y2, angle2);
