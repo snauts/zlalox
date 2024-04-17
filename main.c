@@ -294,11 +294,21 @@ static void prepare(void) {
     }
 }
 
+static void display_title(void) {
+    put_str("Press Z or X", 10, 16, 5);
+}
+
 void main(void) {
     __asm__("ld sp, #0xFDFC");
 
     setup_irq();
     prepare();
+
+    clear_screen();
+    init_variables();
+    display_title();
+
+    while (!dir) control();
 
     for (;;) {
 	clear_screen();
