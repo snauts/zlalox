@@ -85,7 +85,7 @@ static byte err;
 static void error_str(const char *msg) {
     error_at(msg, err);
     if (++err >= 24) err = 0;
-    error_at("----------------", err);
+    error_at("----------", err);
 }
 
 static char to_hex(byte digit) {
@@ -271,6 +271,8 @@ static void game_loop(void) {
 	wait_vblank();
 	draw_player(0);
 	if (collision) {
+	    error_str("COLLISION");
+	    error_num(pos);
 	    death_loop();
 	    break;
 	}
