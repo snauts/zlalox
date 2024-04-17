@@ -188,6 +188,39 @@ static void crash_sound_vblank(int8 step) {
 }
 
 static byte counter;
+static void jerk_vblank(void) {
+    static const byte jerk_color[] = { 0, 1, 5, 7 };
+    byte c = 0, s = 0;
+    word i = 0, j = 0;
+    word period = 224 - counter;
+    word width = (counter - 192) << 3;
+    vblank = 0;
+    while (!vblank) {
+	out_fe(jerk_color[c] | s);
+	if (i == width) {
+	    c = (c + 1) & 3;
+	    i = 0;
+	}
+	if (j == period) {
+	    s ^= 0x10;
+	    j = 0;
+	}
+	j++;
+	i++;
+    }
+    out_fe(0);
+}
+
+static void game_vblank(void) {
+    if (counter < 192) {
+	wait_vblank();
+    }
+    else {
+	jerk_vblank();
+    }
+}
+
+
 static const byte *pattern;
 static const byte *segment;
 
@@ -211,7 +244,7 @@ static void scroll_back(void) {
 	    break;
 	}
     }
-    if (counter == 0xff) {
+    if (counter > 224) {
 	next_pattern();
     }
 }
@@ -276,7 +309,7 @@ static void game_loop(void) {
 	control();
 	scroll_snow();
 	draw_player(1);
-	wait_vblank();
+	game_vblank();
 	draw_player(0);
 	if (collision) {
 	    error_str("COLLISION");
