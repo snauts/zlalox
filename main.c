@@ -1,6 +1,8 @@
 #include "main.h"
 #include "data.h"
 
+#include "level.h"
+
 #define BORDER 10
 
 static volatile byte vblank;
@@ -165,10 +167,40 @@ static void wait_vblank(void) {
     while (!vblank) { }
 }
 
+static word counter;
+static const byte *pattern;
+static const byte *segment;
+
+static void scroll_back(void) {
+    while (segment > pattern) {
+	byte diff = segment[-2];
+	if (diff <= counter) {
+	    counter -= diff;
+	    segment -= 3;
+	}
+	else {
+	    break;
+	}
+    }
+}
+
 static void scroll_snow(void) {
+    byte y = counter & 0xFF;
+    const byte *ptr = segment;
+    while (y < 192 && ptr[0] > 0) {
+	BYTE(map_y[y] + ptr[0]) = ptr[2];
+	y += ptr[1];
+	ptr += 3;
+    }
+    counter++;
+    scroll_back();
 }
 
 static void next_pattern(void) {
+    segment = level_path + sizeof(level_path);
+    pattern = level_path;
+    scroll_back();
+    counter = 0;
 }
 
 static void game_loop(void) {
