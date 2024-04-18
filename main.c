@@ -353,18 +353,16 @@ static void prepare(void) {
     }
 }
 
-#define TITLE_X		4
-#define TITLE_Y		64
-static void display_title(void) {
+static void display_title(byte dx, byte dy) {
     word i = 0, j = 0;
-    put_str("Press Z or X", 10, 16, 5);
-    for (byte y = TITLE_Y; y < TITLE_Y + 40; y++) {
-	for (byte x = TITLE_X; x < TITLE_X + 24; x++) {
+    dy = dy << 3;
+    for (byte y = dy; y < dy + 40; y++) {
+	for (byte x = dx; x < dx + 24; x++) {
 	    BYTE(map_y[y] + x) = title[i++];
 	}
     }
-    for (byte y = TITLE_Y; y < TITLE_Y + 40; y += 8) {
-	for (byte x = TITLE_X; x < TITLE_X + 24; x++) {
+    for (byte y = dy; y < dy + 40; y += 8) {
+	for (byte x = dx; x < dx + 24; x++) {
 	    BYTE(0x5800 + (y << 2) + x) = title_color[j++];
 	}
     }
@@ -378,7 +376,9 @@ void main(void) {
 
     clear_screen();
     init_variables();
-    display_title();
+    display_title(4, 8);
+
+    put_str("Press Z or X", 10, 16, 5);
 
     level = 0;
     wait_for_button();
