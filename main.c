@@ -52,7 +52,7 @@ static byte in_fe(byte a) __naked {
 static word map_y[192];
 
 static void slow_pixel(byte x, byte y) {
-    BYTE(map_y[y] + (x >> 3)) ^= 0x80 >> (x & 7);
+    BYTE(map_y[y] + (x >> 3)) ^= shift_R[x & 7];
 }
 
 static void clear_screen(void) {
