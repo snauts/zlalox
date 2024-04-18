@@ -243,6 +243,19 @@ static const struct Level level_list[] = {
     { level_path, sizeof(level_path) },
 };
 
+static void display_title(byte dx, byte dy);
+
+static void finish_game(void) {
+    clear_screen();
+    put_str("Congratulations!", 8, 4, 5);
+    put_str("GAME COMPLETE", 9, 20, 5);
+    put_str("You are now", 4, 9, 5);
+    put_str("champion", 20, 15, 5);
+    display_title(4, 10);
+    wait_for_button();
+    main();
+}
+
 static void end_game(void) {
     clear_screen();
     put_str("GAME OVER", 11, 11, 5);
@@ -252,7 +265,7 @@ static void end_game(void) {
 
 static void next_pattern(byte inc) {
     level += inc;
-    if (SIZE(level_list) == level) end_game();
+    if (SIZE(level_list) == level) finish_game();
     const struct Level *next = level_list + level;
     segment = next->ptr + next->size;
     pattern = next->ptr;
