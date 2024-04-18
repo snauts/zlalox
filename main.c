@@ -227,7 +227,7 @@ static void game_vblank(void) {
 }
 
 
-static byte level;
+static byte level, lives;
 static const byte *pattern;
 static const byte *segment;
 
@@ -381,6 +381,12 @@ static void display_title(byte dx, byte dy) {
     }
 }
 
+static void reset_variables(void) {
+    init_variables();
+    level = 0;
+    lives = 5;
+}
+
 void main(void) {
     __asm__("ld sp, #0xFDFC");
 
@@ -388,12 +394,11 @@ void main(void) {
     prepare();
 
     clear_screen();
-    init_variables();
+    reset_variables();
     display_title(4, 8);
 
     put_str("Press Z or X", 10, 16, 5);
 
-    level = 0;
     wait_for_button();
 
     for (;;) {
