@@ -235,11 +235,12 @@ static void scroll_back(void);
 struct Level {
     byte *ptr;
     word size;
+    const char *msg;
 };
 
 static const struct Level level_list[] = {
-    { level_snow, sizeof(level_snow) },
-    { level_path, sizeof(level_path) },
+    { level_snow, sizeof(level_snow), " GO GO GO" },
+    { level_path, sizeof(level_path), " SPLENDID" },
 };
 
 static void display_title(byte dx, byte dy);
@@ -293,6 +294,7 @@ static void next_pattern(byte inc) {
     const struct Level *next = level_list + level;
     segment = next->ptr + next->size;
     pattern = next->ptr;
+    error_str(next->msg);
     counter = 0;
     scroll_back();
 }
@@ -376,7 +378,7 @@ static void game_loop(void) {
 	game_vblank();
 	draw_player(0);
 	if (collision) {
-	    error_str("COLLISION");
+	    error_str(" ACCIDENT");
 	    death_loop();
 	    take_life();
 	    break;
