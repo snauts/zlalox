@@ -269,7 +269,7 @@ static void hail_stone(short x, short y) {
 static void blizzard(void) {
     byte rows = 0;
     short height = ticks;
-    while (height >= 0 && rows < 24) {
+    while (height >= 0 && rows < 32) {
 	short x = ticks + hail_offset[rows];
 	hail_stone(x - 1, height - 1);
 	hail_stone(x, height);
