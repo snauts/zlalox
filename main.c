@@ -507,29 +507,26 @@ static const word music[] = {
 
 static void ice_castle(void) {
     word index = 0;
-    word phase = 0;
     word duration = 0;
     word period = music[index];
 
     while ((in_fe(0xfe) & 0x6) == 0x6) {
-	if (period > 0 && phase < period) {
+	if (period > 0) {
 	    out_fe(0x10);
 	    delay(period);
 	    out_fe(0x00);
 	    delay(period);
 	}
-	else {
+	if (duration >= 5) {
 	    period = 0;
 	}
 	if (duration >= music[index + 1]) {
 	    index = music[index + 3] == 0 ? 0 : index + 2;
 	    period = music[index];
 	    duration = 0;
-	    phase = 0;
 	}
 	if (vblank) {
 	    duration++;
-	    phase += 20;
 	    vblank = 0;
 	}
     }
