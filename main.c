@@ -257,6 +257,21 @@ static void put_skii_mask(byte dx, byte dy) {
     }
 }
 
+static void show_life(void) {
+    for (byte i = 0; i < lives; i++) {
+	put_skii_mask(22, 2 + i);
+    }
+}
+
+static void take_life(void) {
+    if (lives > 0) {
+	lives--;
+    }
+    else {
+	end_game();
+    }
+}
+
 static void finish_game(void) {
     clear_screen();
     put_str("Congratulations!", 8, 4, 5);
@@ -366,6 +381,7 @@ static void game_loop(void) {
 	if (collision) {
 	    error_str("COLLISION");
 	    death_loop();
+	    take_life();
 	    break;
 	}
     }
@@ -418,6 +434,7 @@ void main(void) {
 	init_variables();
 	track_border();
 	track_color();
+	show_life();
 
 	game_loop();
     }
