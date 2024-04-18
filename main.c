@@ -474,18 +474,18 @@ static void delay(word loops) {
     for (word i = 0; i < loops; i++) { }
 }
 
-#define C4  112
-#define D4  108
-#define E4  104
-#define F4  100
-#define F4s 98
-#define G4  96
-#define G4s 94
-#define A4  92
-#define B4  88
-#define C5  84
-#define C5s 82
-#define D5  80
+#define C4  161
+#define D4  144
+#define E4  127
+#define F4  120
+#define F4s 113
+#define G4  107
+#define G4s 101
+#define A4  94
+#define B4  85
+#define C5  80
+#define C5s 75
+#define D5  71
 
 #define L4  24
 #define L8D 18
