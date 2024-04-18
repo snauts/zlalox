@@ -267,7 +267,7 @@ static void hail_stone(word x, byte y) {
 }
 
 static void blizzard(void) {
-    byte rows = 16;
+    byte rows = 24;
     short height = ticks;
     while (height >= 0 && rows > 0) {
 	byte clear = rows & 1;
@@ -280,7 +280,7 @@ static void blizzard(void) {
 		clear_row(height);
 	    }
 	}
-	height -= clear ? 16 : 1;
+	height -= clear ? 12 : 1;
 	rows--;
     }
     next_level(height > 192);
