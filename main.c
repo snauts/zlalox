@@ -280,7 +280,7 @@ static void blizzard(void) {
 		clear_row(height);
 	    }
 	}
-	height -= clear ? 12 : 1;
+	height -= clear ? 8 : 1;
 	rows--;
     }
     next_level(height > 192);
