@@ -241,6 +241,7 @@ struct Level {
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO GO GO" },
     { level_path, sizeof(level_path), " SPLENDID" },
+    { level_diam, sizeof(level_diam), " DIAMONDS" },
 };
 
 static void display_title(byte dx, byte dy);
