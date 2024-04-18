@@ -470,6 +470,71 @@ static void display_title(byte dx, byte dy) {
     }
 }
 
+static void delay(word loops) {
+    for (word i = 0; i < loops; i++) { }
+}
+
+#define C4  112
+#define D4  108
+#define E4  104
+#define F4  100
+#define F4s 98
+#define G4  96
+#define G4s 94
+#define A4  92
+#define B4  88
+#define C5  84
+#define C5s 82
+#define D5  80
+
+#define L4  24
+#define L8D 18
+#define L8  12
+#define L16  6
+
+static const word music[] = {
+    A4,  L8,  D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
+    G4,  L8,  E4,  L8,  G4,  L8, G4,  L8, F4s, L8, A4, L8, A4, L4,
+    A4,  L8 , D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
+    G4,  L8 , E4,  L8,  E4,  L8, E4,  L8, D4,  L8, D4, L8, D4, L4,
+
+    D5,  L8D, C5s, L16, C5s, L8, A4,  L8, B4,  L8, B4, L8, B4, L4,
+    C5s, L8D, B4,  L16, B4,  L8, G4s, L8, A4,  L8, A4, L8, A4, L4,
+    D5,  L8D, C5s, L16, C5s, L8, A4,  L8, B4,  L8, B4, L8, B4, L4,
+    C5s, L8D, B4,  L16, B4,  L8, G4s, L8, A4,  L8, A4, L8, A4, L4,
+    0, 200, 0, 0
+};
+
+static void ice_castle(void) {
+    word index = 0;
+    word phase = 0;
+    word duration = 0;
+    word period = music[index];
+
+    while ((in_fe(0xfe) & 0x6) == 0x6) {
+	if (period > 0 && phase < period) {
+	    out_fe(0x10);
+	    delay(period - phase);
+	    out_fe(0x00);
+	    delay(period + phase);
+	}
+	else {
+	    period = 0;
+	}
+	if (duration >= music[index + 1]) {
+	    index = music[index + 3] == 0 ? 0 : index + 2;
+	    period = music[index];
+	    duration = 0;
+	    phase = 0;
+	}
+	if (vblank) {
+	    duration++;
+	    phase += 20;
+	    vblank = 0;
+	}
+    }
+}
+
 static void reset_variables(void) {
     init_variables();
     level = 0;
