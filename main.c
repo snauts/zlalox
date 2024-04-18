@@ -226,7 +226,6 @@ static void game_vblank(void) {
     }
 }
 
-
 static byte level, lives;
 static const byte *pattern;
 static const byte *segment;
@@ -244,6 +243,19 @@ static const struct Level level_list[] = {
 };
 
 static void display_title(byte dx, byte dy);
+
+static void put_skii_mask(byte dx, byte dy) {
+    byte i = 0;
+    dy = dy << 3;
+    for (byte y = dy; y < dy + 6; y++) {
+	for (byte x = dx; x < dx + 3; x++) {
+	    BYTE(map_y[y] + x) = skii_mask[i++];
+	}
+    }
+    for (byte x = dx; x < dx + 3; x++) {
+	BYTE(0x5800 + (dy << 2) + x) = (x == dx) ? 5 : 0x45;
+    }
+}
 
 static void finish_game(void) {
     clear_screen();
