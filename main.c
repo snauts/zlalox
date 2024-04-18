@@ -259,29 +259,22 @@ static void clear_row(byte y) {
     }
 }
 
-static void hail_stone(word x, byte y) {
+static void hail_stone(short x, short y) {
     x = x & 0x7f;
-    if (x < 80) {
+    if (x < 80 && 0 <= y && y < 192) {
 	slow_pixel(88 + x, y);
     }
 }
 
 static void blizzard(void) {
-    byte rows = 24;
+    byte rows = 0;
     short height = ticks;
-    while (height >= 0 && rows > 0) {
-	byte clear = rows & 1;
-	if (height < 192) {
-	    if (!clear) {
-		hail_stone(ticks + hail_offset[rows - 1], height);
-		hail_stone(ticks + hail_offset[rows - 2], height);
-	    }
-	    else {
-		clear_row(height);
-	    }
-	}
-	height -= clear ? 8 : 1;
-	rows--;
+    while (height >= 0 && rows < 24) {
+	short x = ticks + hail_offset[rows];
+	hail_stone(x - 1, height - 1);
+	hail_stone(x, height);
+	height -= 6;
+	rows++;
     }
     next_level(height > 192);
     ticks++;
