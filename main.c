@@ -3,7 +3,8 @@
 
 #include "level.h"
 
-#define BORDER 10
+#define WIDTH	10
+#define BORDER	10
 
 void main(void);
 
@@ -234,11 +235,53 @@ static byte level, lives;
 static const byte *pattern;
 static const byte *segment;
 
+static void next_pattern(byte inc);
+
 struct Level {
     byte *ptr;
     word size;
     const char *msg;
 };
+
+static void next_level(byte is_ending) {
+    if (counter == 0) {
+	if (is_ending) counter = 192;
+    }
+    else if (counter++ > 224) {
+	next_pattern(1);
+    }
+}
+
+static void clear_row(byte y) {
+    word addr = map_y[y] + 11;
+    for (byte x = 0; x < WIDTH; x++) {
+	BYTE(addr++) = 0;
+    }
+}
+
+static void blizzard(void) {
+    byte rows = 16;
+    short height = ticks;
+    while (height >= 0 && rows > 0) {
+	byte clear = rows & 1;
+	if (height < 192) {
+	    if (!clear) {
+		byte data = shift_R[ticks & 7];
+		word addr = map_y[height] + 11;
+		for (byte x = 0; x < WIDTH; x++) {
+		    BYTE(addr++) = data;
+		}
+	    }
+	    else {
+		clear_row(height);
+	    }
+	}
+	height -= clear ? 16 : 1;
+	rows--;
+    }
+    next_level(height > 192);
+    ticks++;
+}
 
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO GO GO" },
@@ -308,6 +351,7 @@ static void next_pattern(byte inc) {
     }
     else {
 	callback = (void(*)(void)) next->ptr;
+	ticks = 0;
     }
     error_str(next->msg);
 }
