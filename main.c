@@ -22,6 +22,10 @@ static void memset(word addr, byte data, word len) {
     while (len-- > 0) { BYTE(addr++) = data; }
 }
 
+static void __sdcc_call_hl(void) __naked {
+    __asm__("jp (hl)");
+}
+
 static void setup_irq(void) {
     __asm__("di");
     BYTE(0xfdfd) = 0xc3;
@@ -230,8 +234,6 @@ static byte level, lives;
 static const byte *pattern;
 static const byte *segment;
 
-static void scroll_back(void);
-
 struct Level {
     byte *ptr;
     word size;
@@ -289,18 +291,28 @@ static void take_life(void) {
     }
 }
 
+static void scroll(void);
+static void advance(void);
+static void (*callback)(void);
+
 static void next_pattern(byte inc) {
+    counter = 0;
     level += inc;
     if (SIZE(level_list) == level) finish_game();
     const struct Level *next = level_list + level;
-    segment = next->ptr + next->size;
-    pattern = next->ptr;
+    if (next->size > 0) {
+	callback = scroll;
+	pattern = next->ptr;
+	segment = next->ptr + next->size;
+	advance();
+    }
+    else {
+	callback = (void(*)(void)) next->ptr;
+    }
     error_str(next->msg);
-    counter = 0;
-    scroll_back();
 }
 
-static void scroll_back(void) {
+static void advance(void) {
     while (segment > pattern) {
 	byte diff = segment[-2];
 	if (diff <= counter) {
@@ -316,7 +328,7 @@ static void scroll_back(void) {
     }
 }
 
-static void scroll_snow(void) {
+static void scroll(void) {
     byte y = counter;
     const byte *ptr = segment;
     while (y < 192 && ptr[0] > 0) {
@@ -325,7 +337,7 @@ static void scroll_snow(void) {
 	ptr += 3;
     }
     counter++;
-    scroll_back();
+    advance();
 }
 
 static void draw_ski(byte x, byte y, byte angle) {
@@ -374,7 +386,7 @@ static void game_loop(void) {
     next_pattern(0);
     for (;;) {
 	control();
-	scroll_snow();
+	callback();
 	draw_player(1);
 	game_vblank();
 	draw_player(0);
