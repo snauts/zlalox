@@ -259,6 +259,13 @@ static void clear_row(byte y) {
     }
 }
 
+static void hail_stone(word x, byte y) {
+    x = x & 0x7f;
+    if (x < 80) {
+	slow_pixel(88 + x, y);
+    }
+}
+
 static void blizzard(void) {
     byte rows = 16;
     short height = ticks;
@@ -266,11 +273,8 @@ static void blizzard(void) {
 	byte clear = rows & 1;
 	if (height < 192) {
 	    if (!clear) {
-		byte data = shift_R[ticks & 7];
-		word addr = map_y[height] + 11;
-		for (byte x = 0; x < WIDTH; x++) {
-		    BYTE(addr++) = data;
-		}
+		hail_stone(ticks + hail_offset[rows - 1], height);
+		hail_stone(ticks + hail_offset[rows - 2], height);
 	    }
 	    else {
 		clear_row(height);
@@ -286,6 +290,7 @@ static void blizzard(void) {
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO GO GO" },
     { level_path, sizeof(level_path), " SPLENDID" },
+    { (byte *) blizzard, 0, " BLIZZARD" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
 };
 

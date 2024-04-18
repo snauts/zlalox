@@ -63,3 +63,7 @@ static const byte skii_mask[] = {
 static const byte shift_R[] = {
     0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01
 };
+
+static const byte hail_offset[] = {
+    56, 91, 98, 70, 49, 0, 14, 28, 77, 21, 7, 35, 105, 63, 42, 84
+};
