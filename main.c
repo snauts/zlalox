@@ -263,15 +263,6 @@ static void show_life(void) {
     }
 }
 
-static void take_life(void) {
-    if (lives > 0) {
-	lives--;
-    }
-    else {
-	end_game();
-    }
-}
-
 static void finish_game(void) {
     clear_screen();
     put_str("Congratulations!", 8, 4, 5);
@@ -288,6 +279,12 @@ static void end_game(void) {
     put_str("GAME OVER", 11, 11, 5);
     wait_for_button();
     main();
+}
+
+static void take_life(void) {
+    if (lives-- == 0) {
+	end_game();
+    }
 }
 
 static void next_pattern(byte inc) {
