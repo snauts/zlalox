@@ -1,3 +1,34 @@
+#define C4  161
+#define D4  144
+#define E4  127
+#define F4  120
+#define F4s 113
+#define G4  107
+#define G4s 101
+#define A4  94
+#define B4  82
+#define C5  77
+#define C5s 72
+#define D5  67
+
+#define L4  24
+#define L8D 18
+#define L8  12
+#define L16  6
+
+static const word music[] = {
+    A4,  L8,  D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
+    G4,  L8,  E4,  L8,  G4,  L8, G4,  L8, F4s, L8, A4, L8, A4, L4,
+    A4,  L8 , D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
+    G4,  L8 , E4,  L8,  E4,  L8, E4,  L8, D4,  L8, D4, L8, D4, L4,
+
+    D5,  L8D, C5s, L16, C5s, L8, A4,  L8, B4,  L8, B4, L8, B4, L4,
+    C5s, L8D, B4,  L16, B4,  L8, G4s, L8, A4,  L8, A4, L8, A4, L4,
+    D5,  L8D, C5s, L16, C5s, L8, A4,  L8, B4,  L8, B4, L8, B4, L4,
+    C5s, L8D, B4,  L16, B4,  L8, G4s, L8, A4,  L8, A4, L8, A4, L4,
+    0, 0
+};
+
 static const word pixels[] = {
     0x00A0, 0x0050, 0x0028, 0x0014,
     0x000A, 0x0005, 0x8002, 0x4001
