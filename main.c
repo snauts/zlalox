@@ -482,10 +482,10 @@ static void delay(word loops) {
 #define G4  107
 #define G4s 101
 #define A4  94
-#define B4  85
-#define C5  80
-#define C5s 75
-#define D5  71
+#define B4  82
+#define C5  77
+#define C5s 72
+#define D5  67
 
 #define L4  24
 #define L8D 18
@@ -502,7 +502,7 @@ static const word music[] = {
     C5s, L8D, B4,  L16, B4,  L8, G4s, L8, A4,  L8, A4, L8, A4, L4,
     D5,  L8D, C5s, L16, C5s, L8, A4,  L8, B4,  L8, B4, L8, B4, L4,
     C5s, L8D, B4,  L16, B4,  L8, G4s, L8, A4,  L8, A4, L8, A4, L4,
-    0, 200, 0, 0
+    0, 0
 };
 
 static void ice_castle(void) {
@@ -514,9 +514,9 @@ static void ice_castle(void) {
     while ((in_fe(0xfe) & 0x6) == 0x6) {
 	if (period > 0 && phase < period) {
 	    out_fe(0x10);
-	    delay(period - phase);
+	    delay(period);
 	    out_fe(0x00);
-	    delay(period + phase);
+	    delay(period);
 	}
 	else {
 	    period = 0;
