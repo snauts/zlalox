@@ -88,6 +88,15 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+static void hexdump(unsigned char *buf, int size) {
+    for (int i = 0; i < size; i++) {
+	fprintf(stderr, "%02x ", buf[i]);
+	if ((i & 0xf) == 0xf) {
+	    fprintf(stderr, "\n");
+	}
+    }
+}
+
 static void save_level(struct Header *header, unsigned char *buf) {
     if (header->w != WIDTH * 8) {
 	printf("ERROR: bad width %d, expected %d\n", header->w, WIDTH * 8);
