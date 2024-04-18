@@ -95,7 +95,7 @@ static void error_str(const char *msg) {
     put_row(' ', 0, err, 0, BORDER);
     put_str(msg, 0, err, 7);
     if (++err >= 24) err = 0;
-    put_row('-', 0, err, 5, BORDER);
+    put_row('=', 0, err, 5, BORDER);
 }
 
 static char to_hex(byte digit) {
