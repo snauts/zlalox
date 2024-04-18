@@ -173,8 +173,8 @@ static void init_variables(void) {
 }
 
 static void wait_vblank(void) {
-    vblank = 0;
     while (!vblank) { }
+    vblank = 0;
 }
 
 static void vblank_delay(word ticks) {
@@ -183,7 +183,6 @@ static void vblank_delay(word ticks) {
 
 static word ticks;
 static void crash_sound_vblank(int8 step) {
-    vblank = 0;
     while (!vblank) {
 	out_fe(0x10);
 	vblank_delay(ticks);
@@ -191,6 +190,7 @@ static void crash_sound_vblank(int8 step) {
 	vblank_delay(ticks);
 	ticks += step;
     }
+    vblank = 0;
 }
 
 static byte counter;
@@ -200,7 +200,6 @@ static void jerk_vblank(void) {
     word i = 0, j = 0;
     word period = (224 - counter) >> 1;
     word width = (counter - 192) << 3;
-    vblank = 0;
     while (!vblank) {
 	out_fe(jerk_color[c] | s);
 	if (i == width) {
@@ -214,6 +213,7 @@ static void jerk_vblank(void) {
 	j++;
 	i++;
     }
+    vblank = 0;
     out_fe(0);
 }
 
