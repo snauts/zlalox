@@ -553,7 +553,7 @@ void main(void) {
 
     put_str("Press Z or X", 10, 16, 5);
 
-    wait_for_button();
+    ice_castle();
 
     for (;;) {
 	clear_screen();
