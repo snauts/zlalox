@@ -252,10 +252,12 @@ static void next_level(byte is_ending) {
     }
 }
 
-static void clear_row(byte y) {
-    word addr = map_y[y] + 11;
-    for (byte x = 0; x < WIDTH; x++) {
-	BYTE(addr++) = 0;
+static void clear_row(short y) {
+    if (0 <= y && y < 192) {
+	word addr = map_y[y] + 11;
+	for (byte x = 0; x < WIDTH; x++) {
+	    BYTE(addr++) = 0;
+	}
     }
 }
 
@@ -296,9 +298,45 @@ static void snower(void) {
     ticks++;
 }
 
+static void draw_worm(byte x, byte offset) {
+    x += swirl[(ticks + offset) & 0x1f];
+    hail_stone(x + 1, ticks);
+    hail_stone(x, ticks);
+}
+
+static byte steer(byte x, byte target) {
+    if (x > target) x--;
+    if (x < target) x++;
+    return x;
+}
+
+static void ice_worm(void) {
+    static byte worm1, worm2;
+    if (ticks == 0) {
+	worm1 = 10;
+	worm2 = 70;
+    }
+    draw_worm(worm1, 11);
+    draw_worm(worm2, 22);
+    clear_row(ticks - 32);
+    if (ticks & 1) {
+	byte p = pos - 88;
+	if (p < 40) {
+	    worm1 = steer(worm1, p);
+	    worm2 = steer(worm2, 70);
+	}
+	else {
+	    worm1 = steer(worm1, 10);
+	    worm2 = steer(worm2, p);
+	}
+    }
+    ticks++;
+}
+
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO.GO.GO" },
     { level_path, sizeof(level_path), " [BURROW]" },
+    { (byte *) ice_worm, 0, " ICE-WORM" },
     { level_tetr, sizeof(level_tetr), " =TETRIS=" },
     { (byte *) blizzard, 0, " BLIZZARD" },
     { level_trap, sizeof(level_trap), " -<TRAP>-" },
