@@ -470,30 +470,36 @@ static void delay(word loops) {
 }
 
 static void ice_castle(void) {
+    const byte *tune = music;
+
     byte decay = 9;
-    byte index = 0;
+    byte octave = 0;
     byte duration = 0;
-    byte period = music[index];
+    word period = tune[0];
 
     while ((in_fe(0xfe) & 0x6) == 0x6) {
 	if (period > 0) {
 	    out_fe(0x10);
-	    delay(period - duration);
+	    delay(period);
 	    out_fe(0x00);
-	    delay(period + duration);
-	}
-	if (duration >= decay) {
-	    period = 0;
-	}
-	if (duration >= music[index + 1]) {
-	    index = music[index + 3] == 0 ? 0 : index + 2;
-	    decay = music[index + 1] == 6 ? 3 : 9;
-	    period = music[index];
-	    duration = 0;
+	    delay(period);
 	}
 	if (vblank) {
 	    duration++;
 	    vblank = 0;
+	    if (duration >= decay) {
+		period = 0;
+	    }
+	    if (duration >= tune[1]) {
+		tune += 2;
+		if (tune[1] == 0) {
+		    octave = (octave + 3) & 3;
+		    tune = music;
+		}
+		decay = tune[1] == L16 ? 3 : 9;
+		period = tune[0] << octave;
+		duration = 0;
+	    }
 	}
     }
 }

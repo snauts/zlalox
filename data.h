@@ -1,15 +1,15 @@
-#define C4  161
-#define D4  144
-#define E4  127
-#define F4  120
-#define F4s 113
-#define G4  107
-#define G4s 101
-#define A4  94
-#define B4  82
-#define C5  77
-#define C5s 72
-#define D5  67
+#define C4  161		// 261.6
+#define D4  144		// 293.7
+#define E4  127		// 329.6
+#define F4  120		// 349.2
+#define F4s 113		// 369.9
+#define G4  107		// 392.0
+#define G4s 101		// 415.3
+#define A4  94		// 440.0
+#define B4  82		// 493.9
+#define C5  77		// 523.3
+#define C5s 72		// 554.4
+#define D5  67		// 587.3
 
 #define L4  24
 #define L8D 18
