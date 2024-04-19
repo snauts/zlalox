@@ -252,11 +252,11 @@ static void next_level(byte is_ending) {
     }
 }
 
-static void clear_row(short y) {
+static void set_row(short y, byte data) {
     if (0 <= y && y < 192) {
 	word addr = map_y[y] + 11;
 	for (byte x = 0; x < WIDTH; x++) {
-	    BYTE(addr++) = 0;
+	    BYTE(addr++) = data;
 	}
     }
 }
@@ -318,7 +318,7 @@ static void ice_worm(void) {
     }
     draw_worm(worm1, 12, 0);
     draw_worm(worm2, 24, 4);
-    clear_row(ticks - 32);
+    set_row(ticks - 32, 0);
     if (ticks & 1) {
 	byte p = pos - 88;
 	if (p < 50) {
@@ -334,15 +334,35 @@ static void ice_worm(void) {
     ticks++;
 }
 
+static void draw_wall(byte offset, byte exit) {
+    short y = ticks - offset;
+    set_row(y, 0xff);
+    set_row(y - 2, 0);
+    if (y >= 96 && y < 192) {
+	byte i = y < 104 ? (y & 7) : 7;
+	word addr = map_y[y] + exit;
+	BYTE(addr + 1) = gate_R[i];
+	BYTE(addr) = gate_L[i];
+    }
+}
+
+static void gates(void) {
+    draw_wall( 0, 18);
+    draw_wall(48, 13);
+    draw_wall(96, 16);
+    ticks++;
+}
+
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO.GO.GO" },
-    { level_path, sizeof(level_path), " [BURROW]" },
+    { level_path, sizeof(level_path), " (BURROW)" },
     { (byte *) ice_worm, 0, " ICE-WORM" },
     { level_tetr, sizeof(level_tetr), " =TETRIS=" },
     { (byte *) blizzard, 0, " BLIZZARD" },
     { level_trap, sizeof(level_trap), " -<TRAP>-" },
     { (byte *) snower, 0, " +SNOWER+" },
     { level_inva, sizeof(level_inva), " INVADERS" },
+    { (byte *) gates, 0, " ^[GATE]^" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
 };
 
