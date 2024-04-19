@@ -310,6 +310,7 @@ static void show_life(void) {
     }
 }
 
+static void ice_castle(void);
 static void finish_game(void) {
     clear_screen();
     put_str("Congratulations!", 8, 4, 5);
@@ -317,7 +318,7 @@ static void finish_game(void) {
     put_str("You are now", 4, 9, 5);
     put_str("champion", 20, 15, 5);
     display_title(4, 10);
-    wait_for_button();
+    ice_castle();
     main();
 }
 
@@ -522,7 +523,7 @@ void main(void) {
 
     put_str("Press Z or X", 10, 16, 5);
 
-    ice_castle();
+    wait_for_button();
 
     for (;;) {
 	clear_screen();
