@@ -297,12 +297,12 @@ static void snower(void) {
 }
 
 static const struct Level level_list[] = {
-    { level_snow, sizeof(level_snow), " GO GO GO" },
-    { level_path, sizeof(level_path), "  BURROW" },
-    { level_tetr, sizeof(level_tetr), "  TETRIS" },
+    { level_snow, sizeof(level_snow), " GO.GO.GO" },
+    { level_path, sizeof(level_path), " [BURROW]" },
+    { level_tetr, sizeof(level_tetr), " =TETRIS=" },
     { (byte *) blizzard, 0, " BLIZZARD" },
-    { level_trap, sizeof(level_trap), "   TRAP" },
-    { (byte *) snower, 0, "  SNOWER" },
+    { level_trap, sizeof(level_trap), " -<TRAP>-" },
+    { (byte *) snower, 0, " +SNOWER+" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
 };
 
