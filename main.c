@@ -470,10 +470,10 @@ static void delay(word loops) {
 }
 
 static void ice_castle(void) {
-    word decay = 9;
-    word index = 0;
-    word duration = 0;
-    word period = music[index];
+    byte decay = 9;
+    byte index = 0;
+    byte duration = 0;
+    byte period = music[index];
 
     while ((in_fe(0xfe) & 0x6) == 0x6) {
 	if (period > 0) {

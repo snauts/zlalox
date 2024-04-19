@@ -16,7 +16,7 @@
 #define L8  12
 #define L16  6
 
-static const word music[] = {
+static const byte music[] = {
     A4,  L8,  D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
     G4,  L8,  E4,  L8,  G4,  L8, G4,  L8, F4s, L8, A4, L8, A4, L4,
     A4,  L8 , D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
