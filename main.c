@@ -330,6 +330,7 @@ static void ice_worm(void) {
 	    worm2 = steer(worm2, p);
 	}
     }
+    next_level(ticks > 256);
     ticks++;
 }
 
