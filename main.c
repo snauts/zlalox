@@ -313,8 +313,8 @@ static byte steer(byte x, byte target) {
 static void ice_worm(void) {
     static byte worm1, worm2;
     if (ticks == 0) {
-	worm1 = 10;
-	worm2 = 70;
+	worm1 = 20;
+	worm2 = 60;
     }
     draw_worm(worm1, 12);
     draw_worm(worm2, 28);
