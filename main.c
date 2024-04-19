@@ -588,6 +588,12 @@ static void reset_variables(void) {
     lives = 5;
 }
 
+static void start_screen(void) {
+    put_str("Press Z or X", 10, 16, 5);
+    display_title(4, 8);
+    wait_for_button();
+}
+
 void main(void) {
     __asm__("ld sp, #0xFDFC");
 
@@ -596,11 +602,7 @@ void main(void) {
 
     clear_screen();
     reset_variables();
-    display_title(4, 8);
-
-    put_str("Press Z or X", 10, 16, 5);
-
-    wait_for_button();
+    start_screen();
 
     for (;;) {
 	clear_screen();
