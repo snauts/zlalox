@@ -350,6 +350,7 @@ static void gates(void) {
     draw_wall( 0, 18);
     draw_wall(48, 13);
     draw_wall(96, 16);
+    next_level(ticks > 292);
     ticks++;
 }
 
