@@ -285,7 +285,7 @@ static void snower(void) {
     short height = ticks;
     while (height >= 0 && rows < 24) {
 	byte x = snow_offset[rows];
-	byte offset = x + ticks;
+	byte offset = x + height;
 	hail_stone(x + swirl[offset & 0x1f], height);
 	offset--;
 	hail_stone(x + swirl[offset & 0x1f], height - 1);
