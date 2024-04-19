@@ -280,12 +280,29 @@ static void blizzard(void) {
     ticks++;
 }
 
+static void snower(void) {
+    byte rows = 0;
+    short height = ticks;
+    while (height >= 0 && rows < 24) {
+	byte x = snow_offset[rows];
+	byte offset = x + ticks;
+	hail_stone(x + swirl[offset & 0x1f], height);
+	offset--;
+	hail_stone(x + swirl[offset & 0x1f], height - 1);
+	height -= 8;
+	rows++;
+    }
+    next_level(height > 192);
+    ticks++;
+}
+
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO GO GO" },
-    { level_path, sizeof(level_path), " SPLENDID" },
+    { level_path, sizeof(level_path), "  BURROW" },
     { level_tetr, sizeof(level_tetr), "  TETRIS" },
     { (byte *) blizzard, 0, " BLIZZARD" },
-    { level_trap, sizeof(level_trap), "  A TRAP" },
+    { level_trap, sizeof(level_trap), "   TRAP" },
+    { (byte *) snower, 0, "  SNOWER" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
 };
 
