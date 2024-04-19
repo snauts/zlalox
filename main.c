@@ -316,8 +316,8 @@ static void ice_worm(void) {
 	worm1 = 10;
 	worm2 = 70;
     }
-    draw_worm(worm1, 11);
-    draw_worm(worm2, 22);
+    draw_worm(worm1, 12);
+    draw_worm(worm2, 28);
     clear_row(ticks - 32);
     if (ticks & 1) {
 	byte p = pos - 88;
