@@ -298,10 +298,10 @@ static void snower(void) {
     ticks++;
 }
 
-static void draw_worm(byte x, byte offset) {
+static void draw_worm(byte x, byte offset, byte cut) {
     x += swirl[(ticks + offset) & 0x1f];
-    hail_stone(x + 1, ticks);
-    hail_stone(x, ticks);
+    hail_stone(x + 1, ticks - cut);
+    hail_stone(x, ticks - cut);
 }
 
 static byte steer(byte x, byte target) {
@@ -313,15 +313,15 @@ static byte steer(byte x, byte target) {
 static void ice_worm(void) {
     static byte worm1, worm2;
     if (ticks == 0) {
-	worm1 = 20;
-	worm2 = 60;
+	worm1 = 25;
+	worm2 = 65;
     }
-    draw_worm(worm1, 12);
-    draw_worm(worm2, 28);
+    draw_worm(worm1, 12, 0);
+    draw_worm(worm2, 24, 4);
     clear_row(ticks - 32);
     if (ticks & 1) {
 	byte p = pos - 88;
-	if (p < 40) {
+	if (p < 50) {
 	    worm1 = steer(worm1, p);
 	    worm2 = steer(worm2, 70);
 	}
