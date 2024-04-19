@@ -342,6 +342,7 @@ static const struct Level level_list[] = {
     { (byte *) blizzard, 0, " BLIZZARD" },
     { level_trap, sizeof(level_trap), " -<TRAP>-" },
     { (byte *) snower, 0, " +SNOWER+" },
+    { level_inva, sizeof(level_inva), " INVADERS" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
 };
 
