@@ -337,7 +337,7 @@ static void ice_worm(void) {
 static void draw_wall(byte offset, byte exit) {
     short y = ticks - offset;
     set_row(y, 0xff);
-    set_row(y - 2, 0);
+    set_row(y - 4, 0);
     if (y >= 96 && y < 192) {
 	byte i = y < 104 ? (y & 7) : 7;
 	word addr = map_y[y] + exit;
