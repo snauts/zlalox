@@ -359,12 +359,12 @@ static const struct Level level_list[] = {
     { level_path, sizeof(level_path), " (BURROW)" },
     { (byte *) ice_worm, 0, " ICE-WORM" },
     { level_tetr, sizeof(level_tetr), " =TETRIS=" },
-    { (byte *) blizzard, 0, " BLIZZARD" },
     { level_trap, sizeof(level_trap), " -<TRAP>-" },
     { (byte *) snower, 0, " +SNOWER+" },
     { level_inva, sizeof(level_inva), " INVADERS" },
     { (byte *) gates, 0, " ^[GATE]^" },
     { level_berg, sizeof(level_berg), " ICE-BERG" },
+    { (byte *) blizzard, 0, " BLIZZARD" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
 };
 
