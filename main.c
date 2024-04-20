@@ -354,33 +354,35 @@ static void gates(void) {
     ticks++;
 }
 
+static void mover_gate(word addr, byte i) {
+    BYTE(addr + 2) = gate_R[i];
+    BYTE(addr + 1) = 0;
+    BYTE(addr + 0) = gate_L[7 - i];
+}
+
 static void draw_mover(byte offset, byte exit) {
     short y = ticks - offset;
     set_row(y, 0xff);
     set_row(y - 4, 0);
 
     if (y < 192) {
+	word addr = map_y[y];
 	byte i = ((y >> 1) & 7);
 	byte move = (ticks >> 4) + exit;
-	if (move & 8) {
-	    word addr = map_y[y] + (move & 7) + 11;
-	    BYTE(addr + 2) = gate_R[i];
-	    BYTE(addr + 1) = 0;
-	    BYTE(addr) = gate_L[7 - i];
+
+	if ((move & 8) == 0) {
+	    mover_gate(addr + (move & 7) + 11, i);
 	}
 	else {
-	    word addr = map_y[y] + 18 - (move & 7);
-	    BYTE(addr + 2) = gate_R[7 - i];
-	    BYTE(addr + 1) = 0;
-	    BYTE(addr) = gate_L[i];
+	    mover_gate(addr + 18 - (move & 7), 7 - i);
 	}
     }
 }
 
 static void movers(void) {
     draw_mover( 0,  0);
-    draw_mover(64,  3);
-    draw_mover(128, 4);
+    draw_mover(64,  6);
+    draw_mover(128, 14);
     next_level(ticks > 336);
     ticks++;
 }
