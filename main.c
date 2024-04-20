@@ -100,7 +100,6 @@ static void error_str(const char *msg) {
     put_row(' ', 0, err, 0, BORDER);
     put_str(msg, 0, err, 7);
     if (++err >= 24) err = 0;
-    put_row('_', 0, err, 5, BORDER);
 }
 
 static char to_hex(byte digit) {
@@ -174,7 +173,6 @@ static void init_variables(void) {
     collision = 0;
     pos = 127;
     dir = 0;
-    err = 0;
 }
 
 static void wait_vblank(void) {
@@ -520,7 +518,7 @@ static void next_pattern(byte inc) {
 	callback = (void(*)(void)) next->ptr;
 	ticks = 0;
     }
-    error_str(next->msg);
+    if (level == err) error_str(next->msg);
 }
 
 static void advance(void) {
@@ -602,7 +600,6 @@ static void game_loop(void) {
 	game_vblank();
 	draw_player(0);
 	if (collision) {
-	    error_str(" ACCIDENT");
 	    death_loop();
 	    take_life();
 	    break;
@@ -675,12 +672,26 @@ static void reset_variables(void) {
     init_variables();
     level = 0;
     lives = 5;
+    err = 0;
 }
 
 static void start_screen(void) {
     put_str("Press Z or X", 10, 16, 5);
     display_title(4, 8);
     wait_for_button();
+}
+
+static void clear_track(void) {
+    for (byte y = 0; y < 192; y++) {
+	word addr = map_y[y];
+	for (byte x = 11; x < 25; x++) {
+	    if (x != 21) BYTE(addr + x) = 0x0;
+	}
+    }
+}
+
+static void message_bar(void) {
+    put_row('_', 0, SIZE(level_list), 5, BORDER);
 }
 
 void main(void) {
@@ -693,11 +704,14 @@ void main(void) {
     reset_variables();
     start_screen();
 
+    clear_screen();
+    track_border();
+    track_color();
+    message_bar();
+
     for (;;) {
-	clear_screen();
 	init_variables();
-	track_border();
-	track_color();
+	clear_track();
 	show_life();
 
 	game_loop();
