@@ -691,7 +691,7 @@ static void clear_track(void) {
 }
 
 static void message_bar(void) {
-    put_row('_', 0, SIZE(level_list), 5, BORDER);
+    put_row('-', 0, SIZE(level_list), 5, BORDER);
 }
 
 void main(void) {
