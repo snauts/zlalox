@@ -354,13 +354,45 @@ static void gates(void) {
     ticks++;
 }
 
+static void draw_mover(byte offset, byte exit) {
+    short y = ticks - offset;
+    set_row(y, 0xff);
+    set_row(y - 4, 0);
+
+    if (y < 192) {
+	byte i = ((y >> 1) & 7);
+	byte move = (ticks >> 4) + exit;
+	if (move & 8) {
+	    word addr = map_y[y] + (move & 7) + 11;
+	    BYTE(addr + 2) = gate_R[i];
+	    BYTE(addr + 1) = 0;
+	    BYTE(addr) = gate_L[7 - i];
+	}
+	else {
+	    word addr = map_y[y] + 18 - (move & 7);
+	    BYTE(addr + 2) = gate_R[7 - i];
+	    BYTE(addr + 1) = 0;
+	    BYTE(addr) = gate_L[i];
+	}
+    }
+}
+
+static void movers(void) {
+    draw_mover( 0,  0);
+    draw_mover(64,  3);
+    draw_mover(128, 4);
+    next_level(ticks > 336);
+    ticks++;
+}
+
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO.GO.GO" },
     { level_path, sizeof(level_path), " (BURROW)" },
     { (byte *) ice_worm, 0, " ICE-WORM" },
     { level_tetr, sizeof(level_tetr), " =TETRIS=" },
-    { level_trap, sizeof(level_trap), " -<TRAP>-" },
     { (byte *) snower, 0, " +SNOWER+" },
+    { level_trap, sizeof(level_trap), " -<TRAP>-" },
+    { (byte *) movers, 0, " *MOVERS*" },
     { level_inva, sizeof(level_inva), " INVADERS" },
     { (byte *) gates, 0, " ^[GATE]^" },
     { level_berg, sizeof(level_berg), " ICE-BERG" },
