@@ -684,8 +684,9 @@ static void start_screen(void) {
 static void clear_track(void) {
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	for (byte x = 11; x < 25; x++) {
-	    if (x != 21) BYTE(addr + x) = 0x0;
+	byte from = y < 128 ? 11 : 0;
+	for (byte x = from; x < 28; x++) {
+		BYTE(addr + x) = 0;
 	}
     }
 }
@@ -705,13 +706,13 @@ void main(void) {
     start_screen();
 
     clear_screen();
-    track_border();
     track_color();
     message_bar();
 
     for (;;) {
 	init_variables();
 	clear_track();
+	track_border();
 	show_life();
 
 	game_loop();
