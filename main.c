@@ -403,6 +403,18 @@ static void draw_corner(short y, byte level) {
     }
 }
 
+static void draw_crown(void) {
+    short y = ticks - 832;
+    for (byte i = 0; i < 16; i += 2) {
+	if (y >= 0 && y < 192) {
+	    word addr = map_y[y];
+	    BYTE(addr + 15) = crown[i];
+	    BYTE(addr + 16) = crown[i + 1];
+	}
+	y++;
+    }
+}
+
 static void finish_game(void);
 static void castle(void) {
     if (ticks < 952) {
@@ -413,6 +425,7 @@ static void castle(void) {
 	    level++;
 	}
 	draw_corner(y - 8, level);
+	draw_crown();
     }
     else if (ticks == 976 || ticks == 1008 || ticks == 1040) {
 	counter = 192;
