@@ -387,7 +387,7 @@ static void movers(void) {
     ticks++;
 }
 
-static void draw_corner(byte y, byte level) {
+static void draw_corner(short y, byte level) {
     for (byte i = 0; i < 9; i++) {
 	if (y >= 0 && y < 192) {
 	    word addr = map_y[y];
@@ -403,17 +403,27 @@ static void draw_corner(byte y, byte level) {
     }
 }
 
+static void finish_game(void);
 static void castle(void) {
-    byte level = 0;
-    word y = ticks;
-    while (y >= 200) {
-	y = y - 200;
-	level++;
-    }
-    draw_corner(y, level);
     if (ticks < 952) {
-	ticks++;
+	byte level = 0;
+	word y = ticks;
+	while (y >= 200) {
+	    y = y - 200;
+	    level++;
+	}
+	draw_corner(y - 8, level);
     }
+    else if (ticks == 976 || ticks == 1008 || ticks == 1040) {
+	counter = 192;
+    }
+    else if (counter > 0 && counter <= 224) {
+	counter++;
+    }
+    if (ticks == 1080) {
+	finish_game();
+    }
+    ticks++;
 }
 
 static const struct Level level_list[] = {
@@ -429,6 +439,7 @@ static const struct Level level_list[] = {
     { level_berg, sizeof(level_berg), " ICE-BERG" },
     { (byte *) blizzard, 0, " BLIZZARD" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
+    { (byte *) castle, 0, " !CASTLE!" },
 };
 
 static void display_title(byte dx, byte dy);
