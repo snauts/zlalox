@@ -387,6 +387,35 @@ static void movers(void) {
     ticks++;
 }
 
+static void draw_corner(byte y, byte level) {
+    for (byte i = 0; i < 9; i++) {
+	if (y >= 0 && y < 192) {
+	    word addr = map_y[y];
+	    byte b1 = 0xff, b2 = 0xff;
+	    if (i > 0) {
+		b1 = gate_L[i - 1];
+		b2 = gate_R[i - 1];
+	    }
+	    BYTE(addr + level + 11) = b1;
+	    BYTE(addr + 20 - level) = b2;
+	}
+	y++;
+    }
+}
+
+static void castle(void) {
+    byte level = 0;
+    word y = ticks;
+    while (y >= 200) {
+	y = y - 200;
+	level++;
+    }
+    draw_corner(y, level);
+    if (ticks < 952) {
+	ticks++;
+    }
+}
+
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO.GO.GO" },
     { level_path, sizeof(level_path), " (BURROW)" },
