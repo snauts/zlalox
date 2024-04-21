@@ -298,8 +298,10 @@ static void snower(void) {
 
 static void draw_worm(byte x, byte offset, byte cut) {
     x += swirl[(ticks + offset) & 0x1f];
-    hail_stone(x + 1, ticks - cut);
-    hail_stone(x, ticks - cut);
+    short y = ticks - cut;
+    hail_stone(x - 1, y);
+    hail_stone(x + 1, y);
+    hail_stone(x, y);
 }
 
 static byte steer(byte x, byte target) {
