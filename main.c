@@ -18,6 +18,7 @@
 #define BITS_PER_PIXEL		1
 #define SHIFT_PER_PIXEL		0
 #define PIXEL_MAP		shift_R
+#define VBLANK_COUNT		1
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0x8000")
@@ -30,6 +31,7 @@
 #define BITS_PER_PIXEL		2
 #define SHIFT_PER_PIXEL		1
 #define PIXEL_MAP		pixel_map
+#define VBLANK_COUNT		6
 #endif
 
 void main(void);
@@ -267,7 +269,7 @@ static void init_variables(void) {
 }
 
 static void wait_vblank(void) {
-    while (!vblank) { }
+    while (vblank < VBLANK_COUNT) { }
     vblank = 0;
 }
 
@@ -277,7 +279,7 @@ static void vblank_delay(word ticks) {
 
 static word ticks;
 static void crash_sound_vblank(int8 step) {
-    while (!vblank) {
+    while (vblank < VBLANK_COUNT) {
 	out_fe(0x10);
 	vblank_delay(ticks);
 	out_fe(0x0);
@@ -294,7 +296,7 @@ static void jerk_vblank(void) {
     word i = 0, j = 0;
     word period = (224 - counter) >> 1;
     word width = (counter - 192) << 3;
-    while (!vblank) {
+    while (vblank < VBLANK_COUNT) {
 	out_fe(jerk_color[c] | s);
 	if (i == width) {
 	    c = (c + 1) & 3;
