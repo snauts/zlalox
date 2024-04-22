@@ -296,13 +296,20 @@ static void crash_sound_vblank(int8 step) {
 
 static byte counter;
 static void jerk_vblank(void) {
-    static const byte jerk_color[] = { 0, 1, 5, 7 };
     byte c = 0, s = 0;
     word i = 0, j = 0;
     word period = (224 - counter) >> 1;
     word width = (counter - 192) << 3;
     while (vblank < VBLANK_COUNT) {
+#ifdef ZXS
+	static const byte jerk_color[] = { 0, 1, 5, 7 };
 	out_fe(jerk_color[c] | s);
+#endif
+#ifdef CPC
+	static const byte jerk_color[] = { 0x54, 0x53, 0x57, 0x4B };
+	gate_array(0x10);
+	gate_array(jerk_color[c]);
+#endif
 	if (i == width) {
 	    c = (c + 1) & 3;
 	    i = 0;
