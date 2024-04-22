@@ -45,7 +45,7 @@ static void setup_sys(void) {
 #ifdef CPC
     /* init video mode type #0 */
     __asm__("push af");
-    __asm__("ld a, #0");
+    __asm__("ld a, #1");
     __asm__("call  #0xBC0E");
     __asm__("pop af");
 #endif
@@ -89,13 +89,32 @@ static void track_border(void) {
     }
 }
 
+#ifdef CPC
+static void set_char_x(byte x) {
+    __asm__("call #0xBB6F");
+}
+static void set_char_y(byte y) {
+    __asm__("call #0xBB72");
+}
+static void put_char_raw(byte c) {
+    __asm__("call #0xBB5A");
+}
+#endif
+
 static void put_char(char symbol, byte x, byte y, byte color) {
+#ifdef ZXS
     y = y << 3;
     word addr = 0x3C00 + (symbol << 3);
     for (byte i = 0; i < 8; i++) {
 	BYTE(map_y[y + i] + x) = BYTE(addr + i);
     }
     BYTE(0x5800 + (y << 2) + x) = color;
+#endif
+#ifdef CPC
+    set_char_x(x);
+    set_char_y(y);
+    put_char_raw(symbol);
+#endif
 }
 
 static void put_str(const char *msg, byte x, byte y, byte color) {
