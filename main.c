@@ -14,7 +14,7 @@
 #define KEY_RIGHT		0x04
 #define TITLE_BUF		title
 #define TITLE_X			4
-#define DENSITY			1
+#define BITS_PER_PIXEL			1
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0x8000")
@@ -24,7 +24,7 @@
 #define KEY_RIGHT		0x40
 #define TITLE_BUF		title_cpc
 #define TITLE_X			16
-#define DENSITY			2
+#define BITS_PER_PIXEL			2
 #endif
 
 void main(void);
@@ -137,8 +137,8 @@ static void track_border(void) {
 #ifdef CPC
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	BYTE(addr + DENSITY * BORDER + 1) = 0x7B;
-	BYTE(addr + DENSITY * (BORDER + WIDTH + 1)) = 0xED;
+	BYTE(addr + BITS_PER_PIXEL * BORDER + 1) = 0x7B;
+	BYTE(addr + BITS_PER_PIXEL * (BORDER + WIDTH + 1)) = 0xED;
     }
 #endif
 }
@@ -544,7 +544,7 @@ static void put_skii_mask(byte dx, byte dy) {
     byte i = 0;
     dy = dy << 3;
     for (byte y = dy; y < dy + 6; y++) {
-	for (byte x = dx; x < dx + 3; x++) {
+	for (byte x = dx; x < dx + 3 * BITS_PER_PIXEL; x++) {
 	    BYTE(map_y[y] + x) = skii_mask[i++];
 	}
     }
@@ -722,7 +722,7 @@ static void display_title(byte dx, byte dy) {
     word i = 0, j = 0;
     dy = dy << 3;
     for (byte y = dy; y < dy + 40; y++) {
-	for (byte x = dx; x < dx + 24 * DENSITY; x++) {
+	for (byte x = dx; x < dx + 24 * BITS_PER_PIXEL; x++) {
 	    BYTE(map_y[y] + x) = TITLE_BUF[i++];
 	}
     }
@@ -795,8 +795,8 @@ static void start_screen(void) {
 static void clear_track(void) {
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	byte from = y < 128 ? 11 * DENSITY : 0;
-	for (byte x = from; x < 28 * DENSITY; x++) {
+	byte from = y < 128 ? 11 * BITS_PER_PIXEL : 0;
+	for (byte x = from; x < 28 * BITS_PER_PIXEL; x++) {
 		BYTE(addr + x) = 0;
 	}
     }
