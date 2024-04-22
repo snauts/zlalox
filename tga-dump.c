@@ -5,8 +5,15 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#define START	11
-#define WIDTH	10
+#ifndef BPP
+#define BPP		1
+#define START		11
+#define CONSUME		consume_pixels
+#else
+#define START		22
+#define CONSUME		consume_pixels_cpc
+#endif
+#define WIDTH		10
 
 struct Header {
     unsigned char id;
@@ -131,7 +138,7 @@ static void save_level(struct Header *header, unsigned char *buf) {
     for (int y = header->h - 1; y >= 0; y--) {
 	unsigned char *ptr = buf + y * header->w;
 	for (int i = 0; i < WIDTH; i++) {
-	    unsigned char pixels = consume_pixels(ptr);
+	    unsigned char pixels = CONSUME(ptr);
 	    if (row[i] != pixels) {
 		row[i] = pixels;
 		out[size + 0] = i + START;

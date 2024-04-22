@@ -9,6 +9,9 @@ all:
 dmp:
 	gcc $(TYPE) tga-dump.c -o tga-dump
 
+dmp_cpc:
+	TYPE=-DBPP=2 make dmp
+
 prg:
 	@echo convert levels to headers
 	@$(foreach F, $(wildcard level/*), ./tga-dump -l $(F) >> level.h;)
@@ -20,7 +23,7 @@ zxs_bin: dmp
 	./tga-dump -b title.tga > level.h
 	CODE=0x8000 DATA=0xf000	TYPE=-DZXS make prg
 
-cpc_bin: dmp
+cpc_bin: dmp_cpc
 	./tga-dump -c title_cpc.tga > level.h
 	./tga-dump -c skii_mask.tga >> level.h
 	./tga-dump -f font_cpc.tga >> level.h
