@@ -731,7 +731,12 @@ static void message_bar(void) {
 }
 
 void main(void) {
-    __asm__("ld sp, #0xBFF0");
+#ifdef ZXS
+    __asm__("ld sp, #0xFDFC");
+#endif
+#ifdef CPC
+    __asm__("ld sp, #0x7FFF");
+#endif
 
     setup_sys();
     prepare();

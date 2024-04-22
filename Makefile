@@ -1,5 +1,5 @@
-CFLAGS := -mz80 --nostdinc --nostdlib --no-std-crt0
-CFLAGS += --code-loc 0x8000 --data-loc 0xb000
+CFLAGS += -mz80 --nostdinc --nostdlib --no-std-crt0
+CFLAGS += --code-loc $(CODE) --data-loc $(DATA)
 
 ENTRY = grep _main zlalox.map | cut -d " " -f 6
 
@@ -8,19 +8,19 @@ all:
 
 prg:
 	rm level.h -f
-	gcc $(ZFLAGS) tga-dump.c -o tga-dump
+	gcc $(TYPE) tga-dump.c -o tga-dump
 	@echo convert levels to headers
 	@$(foreach F, $(wildcard level/*), ./tga-dump -l $(F) >> level.h;)
 	./tga-dump -b title.tga >> level.h
 	@echo compile zlalox with sdcc
-	sdcc $(CFLAGS) $(ZFLAGS) main.c -o zlalox.ihx
+	sdcc $(CFLAGS) $(TYPE) main.c -o zlalox.ihx
 	hex2bin zlalox.ihx > /dev/null
 
 zxs_bin:
-	ZFLAGS=-DZXS make prg
+	CODE=0x8000 DATA=0xf000	TYPE=-DZXS make prg
 
 cpc_bin:
-	ZFLAGS=-DCPC make prg
+	CODE=0x4000 DATA=0x7000	TYPE=-DCPC make prg
 
 zxs: zxs_bin
 	bin2tap -b -r $(shell printf "%d" 0x$$($(ENTRY))) zlalox.bin
@@ -28,7 +28,7 @@ zxs: zxs_bin
 
 cpc: cpc_bin
 	iDSK -n zlalox.dsk
-	iDSK zlalox.dsk -f -t 1 -c 8000 -e $(shell $(ENTRY)) -i zlalox.bin
+	iDSK zlalox.dsk -f -t 1 -c 4000 -e $(shell $(ENTRY)) -i zlalox.bin
 	mame cpc6128 \
 		-window \
 		-skip_gameinfo \
