@@ -698,7 +698,7 @@ static void message_bar(void) {
 }
 
 void main(void) {
-    __asm__("ld sp, #0xFDFC");
+    __asm__("ld sp, #0xBFF0");
 
     setup_irq();
     prepare();
