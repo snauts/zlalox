@@ -19,6 +19,8 @@
 #define SHIFT_PER_PIXEL		0
 #define PIXEL_MAP		shift_R
 #define VBLANK_COUNT		1
+#define PLAYER_ADDR		0x5180
+#define LINE_INC		0x100
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0x8000")
@@ -32,7 +34,12 @@
 #define SHIFT_PER_PIXEL		1
 #define PIXEL_MAP		pixel_map
 #define VBLANK_COUNT		6
+#define PLAYER_ADDR		0xCE40
+#define LINE_INC		0x800
 #endif
+
+#define POS_SHIFT (3 - SHIFT_PER_PIXEL)
+#define PIXEL_MASK (7 >> SHIFT_PER_PIXEL)
 
 void main(void);
 
@@ -114,8 +121,6 @@ static byte in_fe(byte a) __naked {
 static word map_y[192];
 
 static void slow_pixel(byte x, byte y) {
-#define POS_SHIFT (3 - SHIFT_PER_PIXEL)
-#define PIXEL_MASK (7 >> SHIFT_PER_PIXEL)
     BYTE(map_y[y] + (x >> POS_SHIFT)) ^= PIXEL_MAP[x & PIXEL_MASK];
 }
 
@@ -224,13 +229,13 @@ static void wait_for_button(void) {
 
 static byte detect, collision;
 static void draw_straight(void) {
-    word addr = 0x5180 + (pos >> 3);
-    word data = pixels[pos & 0x07];
+    word addr = PLAYER_ADDR + (pos >> POS_SHIFT);
+    word data = pixels[pos & PIXEL_MASK];
     for (byte n = 0; n < 5; n++) {
 	word screen = WORD(addr);
 	if (detect && (screen & data)) collision = 1;
 	WORD(addr) = screen ^ data;
-	addr += 0x100;
+	addr += LINE_INC;
     }
 }
 
