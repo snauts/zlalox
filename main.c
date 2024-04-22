@@ -8,11 +8,13 @@
 
 #ifdef ZXS
 #define SETUP_SP		__asm__("ld sp, #0xFDFC")
+#define IRQ_BASE		0xfe00
 #define START_PROMPT_X		10
 #define PROMPT_COLOR		5
 #endif
 #ifdef CPC
-#define SETUP_SP		__asm__("ld sp, #0x7FFF")
+#define SETUP_SP		__asm__("ld sp, #0x8000")
+#define IRQ_BASE		0x9000
 #define START_PROMPT_X		14
 #define PROMPT_COLOR		2
 #endif
@@ -20,7 +22,6 @@
 void main(void);
 
 static volatile byte vblank;
-#ifdef ZXS
 static void interrupt(void) __naked {
     __asm__("di");
     __asm__("push af");
@@ -30,8 +31,6 @@ static void interrupt(void) __naked {
     __asm__("ei");
     __asm__("reti");
 }
-#endif
-
 
 #ifdef CPC
 static void set_char_x(byte x) {
@@ -47,10 +46,8 @@ static void put_char_raw(byte sym) {
     __asm__("call #0xBB5A"); sym;
 }
 static void gate_array(byte reg) {
-    __asm__("push bc");
     __asm__("ld bc, #0x7f00");
     __asm__("out (c), a"); reg;
-    __asm__("pop bc");
 }
 #endif
 
@@ -62,19 +59,19 @@ static void __sdcc_call_hl(void) __naked {
     __asm__("jp (hl)");
 }
 
-static void setup_sys(void) {
-#ifdef ZXS
+static void setup_irq(byte base) {
     __asm__("di");
-    BYTE(0xfdfd) = 0xc3;
-    WORD(0xfdfe) = ADDR(&interrupt);
-    memset(0xfe00, 0xfd, 0x101);
-    __asm__("push af");
-    __asm__("ld a, #0xfe");
-    __asm__("ld i, a");
-    __asm__("pop af");
+    __asm__("ld i, a"); base;
     __asm__("im 2");
     __asm__("ei");
-#endif
+}
+
+static void setup_sys(void) {
+    BYTE(IRQ_BASE - 3) = 0xc3;
+    WORD(IRQ_BASE - 2) = ADDR(&interrupt);
+    memset(IRQ_BASE, ((IRQ_BASE >> 8) - 1), 0x101);
+    setup_irq(IRQ_BASE >> 8);
+
 #ifdef CPC
     /* init video mode type #0 */
     __asm__("push af");
