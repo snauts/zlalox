@@ -81,6 +81,7 @@ static const byte title_color[] = {
 };
 #endif
 
+#ifdef ZXS
 static const byte skii_mask[] = {
     0x01, 0xf8, 0xf8,
     0x01, 0xc5, 0x18,
@@ -89,6 +90,7 @@ static const byte skii_mask[] = {
     0x00, 0xe0, 0x30,
     0x00, 0x7f, 0xe0,
 };
+#endif
 
 static const byte crown[] = {
     0xff, 0xff,

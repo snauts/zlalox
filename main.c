@@ -543,6 +543,7 @@ static void display_title(byte dx, byte dy);
 static void put_skii_mask(byte dx, byte dy) {
     byte i = 0;
     dy = dy << 3;
+    dx = dx << (BITS_PER_PIXEL - 1);
     for (byte y = dy; y < dy + 6; y++) {
 	for (byte x = dx; x < dx + 3 * BITS_PER_PIXEL; x++) {
 	    BYTE(map_y[y] + x) = skii_mask[i++];
