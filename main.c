@@ -91,13 +91,13 @@ static void track_border(void) {
 
 #ifdef CPC
 static void set_char_x(byte x) {
-    __asm__("call #0xBB6F");
+    __asm__("call #0xBB6F"); x;
 }
 static void set_char_y(byte y) {
-    __asm__("call #0xBB72");
+    __asm__("call #0xBB72"); y;
 }
-static void put_char_raw(byte c) {
-    __asm__("call #0xBB5A");
+static void put_char_raw(byte sym) {
+    __asm__("call #0xBB5A"); sym;
 }
 #endif
 
@@ -114,6 +114,7 @@ static void put_char(char symbol, byte x, byte y, byte color) {
     set_char_x(x);
     set_char_y(y);
     put_char_raw(symbol);
+    color;
 #endif
 }
 
