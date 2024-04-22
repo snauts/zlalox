@@ -73,11 +73,9 @@ static void setup_sys(void) {
     setup_irq(IRQ_BASE >> 8);
 
 #ifdef CPC
-    /* init video mode type #0 */
-    __asm__("push af");
-    __asm__("ld a, #1");
-    __asm__("call  #0xBC0E");
-    __asm__("pop af");
+    for (byte i = 0; i < SIZE(gate_array_init); i++) {
+	gate_array(gate_array_init[i]);
+    }
 #endif
 }
 
