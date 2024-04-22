@@ -7,10 +7,12 @@
 #define BORDER	10
 
 #ifdef ZXS
+#define SETUP_SP		__asm__("ld sp, #0xFDFC")
 #define START_PROMPT_X		10
 #define PROMPT_COLOR		5
 #endif
 #ifdef CPC
+#define SETUP_SP		__asm__("ld sp, #0x7FFF")
 #define START_PROMPT_X		14
 #define PROMPT_COLOR		2
 #endif
@@ -27,6 +29,28 @@ static void interrupt(void) __naked {
     __asm__("pop af");
     __asm__("ei");
     __asm__("reti");
+}
+#endif
+
+
+#ifdef CPC
+static void set_char_x(byte x) {
+    __asm__("call #0xBB6F"); x;
+}
+static void set_char_y(byte y) {
+    __asm__("call #0xBB72"); y;
+}
+static void char_color(byte color) {
+    __asm__("call #0xBB90"); color;
+}
+static void put_char_raw(byte sym) {
+    __asm__("call #0xBB5A"); sym;
+}
+static void gate_array(byte reg) {
+    __asm__("push bc");
+    __asm__("ld bc, #0x7f00");
+    __asm__("out (c), a"); reg;
+    __asm__("pop bc");
 }
 #endif
 
@@ -97,21 +121,6 @@ static void track_border(void) {
 	BYTE(addr + BORDER) = 0x03;
     }
 }
-
-#ifdef CPC
-static void set_char_x(byte x) {
-    __asm__("call #0xBB6F"); x;
-}
-static void set_char_y(byte y) {
-    __asm__("call #0xBB72"); y;
-}
-static void char_color(byte color) {
-    __asm__("call #0xBB90"); color;
-}
-static void put_char_raw(byte sym) {
-    __asm__("call #0xBB5A"); sym;
-}
-#endif
 
 static void put_char(char symbol, byte x, byte y, byte color) {
 #ifdef ZXS
@@ -766,12 +775,7 @@ static void message_bar(void) {
 }
 
 void main(void) {
-#ifdef ZXS
-    __asm__("ld sp, #0xFDFC");
-#endif
-#ifdef CPC
-    __asm__("ld sp, #0x7FFF");
-#endif
+    SETUP_SP;
 
     setup_sys();
     prepare();
