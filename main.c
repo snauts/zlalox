@@ -795,8 +795,8 @@ static void start_screen(void) {
 static void clear_track(void) {
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	byte from = y < 128 ? 11 : 0;
-	for (byte x = from; x < 28; x++) {
+	byte from = y < 128 ? 11 * DENSITY : 0;
+	for (byte x = from; x < 28 * DENSITY; x++) {
 		BYTE(addr + x) = 0;
 	}
     }
