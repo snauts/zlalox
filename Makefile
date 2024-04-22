@@ -27,7 +27,7 @@ cpc_bin: dmp_cpc
 	./tga-dump -c title_cpc.tga > level.h
 	./tga-dump -c skii_mask.tga >> level.h
 	./tga-dump -f font_cpc.tga >> level.h
-	CODE=0x4000 DATA=0x7000	TYPE=-DCPC make prg
+	CODE=0x4000 DATA=0x9000	TYPE=-DCPC make prg
 
 zxs: zxs_bin
 	bin2tap -b -r $(shell printf "%d" 0x$$($(ENTRY))) zlalox.bin

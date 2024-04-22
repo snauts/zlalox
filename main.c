@@ -23,9 +23,9 @@
 #define LINE_INC		0x100
 #endif
 #ifdef CPC
-#define SETUP_SP()		__asm__("ld sp, #0x8000")
+#define SETUP_SP()		__asm__("ld sp, #0xa000")
 #define READ_KEYS()		cpc_keys()
-#define IRQ_BASE		0x9000
+#define IRQ_BASE		0xa200
 #define KEY_LEFT		0x80
 #define KEY_RIGHT		0x40
 #define TITLE_BUF		title_cpc
