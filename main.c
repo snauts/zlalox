@@ -240,14 +240,14 @@ static void draw_straight(void) {
 }
 
 static void draw_side(byte x, word data) {
-    data += (x & 0x07) << 3;
-    word addr = 0x5280 + (x >> 3);
+    data += (x & PIXEL_MASK) << POS_SHIFT;
+    word addr = PLAYER_ADDR + LINE_INC + (x >> POS_SHIFT);
     for (byte n = 0; n < 4; n++) {
 	word screen = WORD(addr);
 	word sprite = WORD(data);
 	if (detect && (screen & sprite)) collision = 1;
 	WORD(addr) = screen ^ sprite;
-	addr += 0x100;
+	addr += LINE_INC;
 	data += 0x02;
     }
 }
