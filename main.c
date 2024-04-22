@@ -17,6 +17,7 @@
 #define TITLE_X			4
 #define BITS_PER_PIXEL		1
 #define SHIFT_PER_PIXEL		0
+#define PIXEL_MAP		shift_R
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0x8000")
@@ -28,6 +29,7 @@
 #define TITLE_X			16
 #define BITS_PER_PIXEL		2
 #define SHIFT_PER_PIXEL		1
+#define PIXEL_MAP		pixel_map
 #endif
 
 void main(void);
@@ -109,7 +111,9 @@ static byte in_fe(byte a) __naked {
 static word map_y[192];
 
 static void slow_pixel(byte x, byte y) {
-    BYTE(map_y[y] + (x >> 3)) ^= shift_R[x & 7];
+#define POS_SHIFT (3 - SHIFT_PER_PIXEL)
+#define PIXEL_MASK (7 >> SHIFT_PER_PIXEL)
+    BYTE(map_y[y] + (x >> POS_SHIFT)) ^= PIXEL_MAP[x & PIXEL_MASK];
 }
 
 static void clear_screen(void) {
