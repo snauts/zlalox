@@ -3,6 +3,7 @@
 
 #include "level.h"
 
+#define LIVES	5
 #define WIDTH	10
 #define BORDER	10
 
@@ -14,7 +15,8 @@
 #define KEY_RIGHT		0x04
 #define TITLE_BUF		title
 #define TITLE_X			4
-#define BITS_PER_PIXEL			1
+#define BITS_PER_PIXEL		1
+#define SHIFT_PER_PIXEL		0
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0x8000")
@@ -24,7 +26,8 @@
 #define KEY_RIGHT		0x40
 #define TITLE_BUF		title_cpc
 #define TITLE_X			16
-#define BITS_PER_PIXEL			2
+#define BITS_PER_PIXEL		2
+#define SHIFT_PER_PIXEL		1
 #endif
 
 void main(void);
@@ -777,8 +780,8 @@ static void ice_castle(void) {
 
 static void reset_variables(void) {
     init_variables();
+    lives = LIVES;
     level = 0;
-    lives = 5;
     err = 0;
 }
 
@@ -793,12 +796,32 @@ static void start_screen(void) {
     wait_for_button();
 }
 
+static byte on_border(byte x) {
+    return x == (BORDER * BITS_PER_PIXEL + SHIFT_PER_PIXEL)
+	|| x == ((BORDER + WIDTH + 1) * BITS_PER_PIXEL);
+}
+
+static void clear_lives(void) {
+    for (byte y = (lives + 2) << 3; y < (LIVES + 2) << 3; y++) {
+	byte from = 22 << SHIFT_PER_PIXEL;
+	byte to = 25 << SHIFT_PER_PIXEL;;
+	word addr = map_y[y];
+	for (byte x = from; x < to; x++) {
+	    BYTE(addr + x) = 0;
+	}
+    }
+}
+
 static void clear_track(void) {
+    clear_lives();
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	byte from = y < 128 ? 11 * BITS_PER_PIXEL : 0;
-	for (byte x = from; x < 28 * BITS_PER_PIXEL; x++) {
-		BYTE(addr + x) = 0;
+	byte from = (y < 128 ? 11 : 4) << SHIFT_PER_PIXEL;
+	byte to = (y < 128 ? 21 : 28) << SHIFT_PER_PIXEL;
+	for (byte x = from; x < to; x++) {
+	    if (!on_border(x)) {
+		BYTE(addr + x) = 0x00;
+	    }
 	}
     }
 }
@@ -820,12 +843,12 @@ void main(void) {
     clear_screen();
     track_color();
     message_bar();
+    show_life();
 
     for (;;) {
 	init_variables();
 	clear_track();
 	track_border();
-	show_life();
 
 	game_loop();
     }
