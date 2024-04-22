@@ -12,7 +12,9 @@
 #define IRQ_BASE		0xfe00
 #define KEY_LEFT		0x02
 #define KEY_RIGHT		0x04
+#define TITLE_BUF		title
 #define TITLE_X			4
+#define DENSITY			1
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0x8000")
@@ -20,7 +22,9 @@
 #define IRQ_BASE		0x9000
 #define KEY_LEFT		0x80
 #define KEY_RIGHT		0x40
+#define TITLE_BUF		title_cpc
 #define TITLE_X			16
+#define DENSITY			2
 #endif
 
 void main(void);
@@ -127,10 +131,12 @@ static void clear_screen(void) {
 }
 
 static void track_color(void) {
+#if ZXS
     memset(0x5800, 0x01, 0x300);
     memset(0x5880, 0x05, 0x260);
     memset(0x5900, 0x07, 0x1C0);
     memset(0x5980, 0x47, 0x120);
+#endif
 }
 
 static void track_border(void) {
@@ -541,9 +547,11 @@ static void put_skii_mask(byte dx, byte dy) {
 	    BYTE(map_y[y] + x) = skii_mask[i++];
 	}
     }
+#if ZXS
     for (byte x = dx; x < dx + 3; x++) {
 	BYTE(0x5800 + (dy << 2) + x) = (x == dx) ? 5 : 0x45;
     }
+#endif
 }
 
 static void show_life(void) {
@@ -713,16 +721,9 @@ static void display_title(byte dx, byte dy) {
     word i = 0, j = 0;
     dy = dy << 3;
     for (byte y = dy; y < dy + 40; y++) {
-#ifdef ZXS
-	for (byte x = dx; x < dx + 24; x++) {
-	    BYTE(map_y[y] + x) = title[i++];
+	for (byte x = dx; x < dx + 24 * DENSITY; x++) {
+	    BYTE(map_y[y] + x) = TITLE_BUF[i++];
 	}
-#endif
-#ifdef CPC
-	for (byte x = dx; x < dx + 48; x++) {
-	    BYTE(map_y[y] + x) = title_cpc[i++];
-	}
-#endif
     }
 #ifdef ZXS
     for (byte y = dy; y < dy + 40; y += 8) {
