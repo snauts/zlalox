@@ -10,19 +10,17 @@
 #define SETUP_SP()		__asm__("ld sp, #0xFDFC")
 #define READ_KEYS()		in_fe(0xfe)
 #define IRQ_BASE		0xfe00
-#define START_PROMPT_X		10
-#define PROMPT_COLOR		5
 #define KEY_LEFT		0x02
 #define KEY_RIGHT		0x04
+#define TITLE_X			4
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0x8000")
 #define READ_KEYS()		cpc_keys()
 #define IRQ_BASE		0x9000
-#define START_PROMPT_X		14
-#define PROMPT_COLOR		2
 #define KEY_LEFT		0x80
 #define KEY_RIGHT		0x40
+#define TITLE_X			16
 #endif
 
 void main(void);
@@ -715,9 +713,16 @@ static void display_title(byte dx, byte dy) {
     word i = 0, j = 0;
     dy = dy << 3;
     for (byte y = dy; y < dy + 40; y++) {
+#ifdef ZXS
 	for (byte x = dx; x < dx + 24; x++) {
 	    BYTE(map_y[y] + x) = title[i++];
 	}
+#endif
+#ifdef CPC
+	for (byte x = dx; x < dx + 48; x++) {
+	    BYTE(map_y[y] + x) = title_cpc[i++];
+	}
+#endif
     }
 #ifdef ZXS
     for (byte y = dy; y < dy + 40; y += 8) {
@@ -775,8 +780,13 @@ static void reset_variables(void) {
 }
 
 static void start_screen(void) {
-    put_str("Press Z or X", START_PROMPT_X, 16, PROMPT_COLOR);
-    display_title(4, 8);
+#ifdef ZXS
+    put_str("Press Z or X", 10, 16, 5);
+#endif
+#ifdef CPC
+    put_str("Press X or C", 15, 16, 1);
+#endif
+    display_title(TITLE_X, 8);
     wait_for_button();
 }
 

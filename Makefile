@@ -6,20 +6,22 @@ ENTRY = grep _main zlalox.map | cut -d " " -f 6
 all:
 	make cpc
 
-prg:
-	rm level.h -f
+dmp:
 	gcc $(TYPE) tga-dump.c -o tga-dump
+
+prg:
 	@echo convert levels to headers
 	@$(foreach F, $(wildcard level/*), ./tga-dump -l $(F) >> level.h;)
-	./tga-dump -b title.tga >> level.h
 	@echo compile zlalox with sdcc
 	sdcc $(CFLAGS) $(TYPE) main.c -o zlalox.ihx
 	hex2bin zlalox.ihx > /dev/null
 
-zxs_bin:
+zxs_bin: dmp
+	./tga-dump -b title.tga > level.h
 	CODE=0x8000 DATA=0xf000	TYPE=-DZXS make prg
 
-cpc_bin:
+cpc_bin: dmp
+	./tga-dump -c title_cpc.tga > level.h
 	CODE=0x4000 DATA=0x7000	TYPE=-DCPC make prg
 
 zxs: zxs_bin

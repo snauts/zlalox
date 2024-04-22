@@ -20,14 +20,22 @@ struct Header {
 
 static void save_level(struct Header *header, unsigned char *buf);
 static void save_bitmap(struct Header *header, unsigned char *buf);
+static void save_bitmap_cpc(struct Header *header, unsigned char *buf);
 
 static unsigned char consume_pixels(unsigned char *buf) {
     unsigned char ret = 0;
     for (int i = 0; i < 8; i++) {
 	ret = ret << 1;
-	if (buf[i] >= 128) {
-	    ret |= 1;
-	}
+	ret |= (buf[i] >> 7) & 1;
+    }
+    return ret;
+}
+
+static unsigned char consume_pixels_cpc(unsigned char *buf) {
+    unsigned char ret = 0;
+    for (int i = 0; i < 4; i++) {
+	ret = ret << 1;
+	ret |= ((buf[i] >> 6) & 1) | ((buf[i] >> 3) & 0x10);
     }
     return ret;
 }
@@ -51,7 +59,8 @@ static char *file_name;
 int main(int argc, char **argv) {
     if (argc != 3) {
 	printf("USAGE: tga-dump [option] file.tga\n");
-	printf("  -b   save bitmap\n");
+	printf("  -c   save bitmap cpc\n");
+	printf("  -b   save bitmap zx\n");
 	printf("  -l   save level\n");
 	return 0;
     }
@@ -82,6 +91,9 @@ int main(int argc, char **argv) {
 	break;
     case 'b':
 	save_bitmap(&header, buf);
+	break;
+    case 'c':
+	save_bitmap_cpc(&header, buf);
 	break;
     }
 
@@ -149,6 +161,18 @@ static void save_bitmap(struct Header *header, unsigned char *buf) {
     for (int i = 0; i < size; i += 8) {
 	printf(" 0x%02x,", consume_pixels(buf + i));
 	if ((i % 64) == 56) printf("\n");
+    }
+    printf("};\n");
+}
+
+static void save_bitmap_cpc(struct Header *header, unsigned char *buf) {
+    char name[256];
+    int size = header->w * header->h;
+    remove_extension(file_name, name);
+    printf("const byte %s[%d] = {\n", name, size / 4);
+    for (int i = 0; i < size; i += 4) {
+	printf(" 0x%02x,", consume_pixels_cpc(buf + i));
+	if ((i % 32) == 28) printf("\n");
     }
     printf("};\n");
 }
