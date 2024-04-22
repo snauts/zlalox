@@ -7,16 +7,22 @@
 #define BORDER	10
 
 #ifdef ZXS
-#define SETUP_SP		__asm__("ld sp, #0xFDFC")
+#define SETUP_SP()		__asm__("ld sp, #0xFDFC")
+#define READ_KEYS()		in_fe(0xfe)
 #define IRQ_BASE		0xfe00
 #define START_PROMPT_X		10
 #define PROMPT_COLOR		5
+#define KEY_LEFT		0x02
+#define KEY_RIGHT		0x04
 #endif
 #ifdef CPC
-#define SETUP_SP		__asm__("ld sp, #0x8000")
+#define SETUP_SP()		__asm__("ld sp, #0x8000")
+#define READ_KEYS()		cpc_keys()
 #define IRQ_BASE		0x9000
 #define START_PROMPT_X		14
 #define PROMPT_COLOR		2
+#define KEY_LEFT		0x80
+#define KEY_RIGHT		0x40
 #endif
 
 void main(void);
@@ -48,6 +54,25 @@ static void put_char_raw(byte sym) {
 static void gate_array(byte reg) {
     __asm__("ld bc, #0x7f00");
     __asm__("out (c), a"); reg;
+}
+static byte cpc_keys(void) __naked {
+    __asm__("di");
+    __asm__("ld bc, #0xf782");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf40e");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf6c0");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf600");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf792");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf647");
+    __asm__("out (c), c");
+    __asm__("ld b, #0xf4");
+    __asm__("in a, (c)");
+    __asm__("ei");
+    __asm__("ret");
 }
 #endif
 
@@ -171,10 +196,10 @@ static void error_num(word num) {
 static byte pos;
 static int8 dir;
 static void control(void) {
-    byte port = in_fe(0xfe);
+    byte port = READ_KEYS();
     dir = 0;
-    if ((port & 2) == 0) dir--;
-    if ((port & 4) == 0) dir++;
+    if ((port & KEY_LEFT) == 0) dir--;
+    if ((port & KEY_RIGHT) == 0) dir++;
     pos += dir;
 }
 
@@ -770,7 +795,7 @@ static void message_bar(void) {
 }
 
 void main(void) {
-    SETUP_SP;
+    SETUP_SP();
 
     setup_sys();
     prepare();
