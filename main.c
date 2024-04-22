@@ -6,6 +6,15 @@
 #define WIDTH	10
 #define BORDER	10
 
+#ifdef ZXS
+#define START_PROMPT_X		10
+#define PROMPT_COLOR		5
+#endif
+#ifdef CPC
+#define START_PROMPT_X		14
+#define PROMPT_COLOR		2
+#endif
+
 void main(void);
 
 static volatile byte vblank;
@@ -96,6 +105,9 @@ static void set_char_x(byte x) {
 static void set_char_y(byte y) {
     __asm__("call #0xBB72"); y;
 }
+static void char_color(byte color) {
+    __asm__("call #0xBB90"); color;
+}
 static void put_char_raw(byte sym) {
     __asm__("call #0xBB5A"); sym;
 }
@@ -113,6 +125,7 @@ static void put_char(char symbol, byte x, byte y, byte color) {
 #ifdef CPC
     set_char_x(x);
     set_char_y(y);
+    char_color(color);
     put_char_raw(symbol);
     color;
 #endif
@@ -677,11 +690,13 @@ static void display_title(byte dx, byte dy) {
 	    BYTE(map_y[y] + x) = title[i++];
 	}
     }
+#ifdef ZXS
     for (byte y = dy; y < dy + 40; y += 8) {
 	for (byte x = dx; x < dx + 24; x++) {
 	    BYTE(0x5800 + (y << 2) + x) = title_color[j++];
 	}
     }
+#endif
 }
 
 static void delay(word loops) {
@@ -731,7 +746,7 @@ static void reset_variables(void) {
 }
 
 static void start_screen(void) {
-    put_str("Press Z or X", 10, 16, 5);
+    put_str("Press Z or X", START_PROMPT_X, 16, PROMPT_COLOR);
     display_title(4, 8);
     wait_for_button();
 }
