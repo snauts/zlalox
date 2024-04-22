@@ -357,8 +357,8 @@ static void next_level(byte is_ending) {
 
 static void set_row(short y, byte data) {
     if (0 <= y && y < 192) {
-	word addr = map_y[y] + 11;
-	for (byte x = 0; x < WIDTH; x++) {
+	word addr = map_y[y] + (11 << SHIFT_PER_PIXEL);
+	for (byte x = 0; x < (WIDTH << SHIFT_PER_PIXEL); x++) {
 	    BYTE(addr++) = data;
 	}
     }
