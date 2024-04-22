@@ -127,17 +127,18 @@ static void save_level(struct Header *header, unsigned char *buf) {
 	exit(-1);
     }
 
+    int width = BPP * WIDTH;
     unsigned height = 0;
-    unsigned char row[WIDTH];
+    unsigned char row[width];
     memset(row, 0, sizeof(row));
 
     unsigned size = 3;
-    unsigned char out[(WIDTH * header->h + 1) * 3];
+    unsigned char out[(width * header->h + 1) * 3];
     memset(out, 0, size); /* zero for termination */
 
     for (int y = header->h - 1; y >= 0; y--) {
 	unsigned char *ptr = buf + y * header->w;
-	for (int i = 0; i < WIDTH; i++) {
+	for (int i = 0; i < width; i++) {
 	    unsigned char pixels = CONSUME(ptr);
 	    if (row[i] != pixels) {
 		row[i] = pixels;
@@ -147,7 +148,7 @@ static void save_level(struct Header *header, unsigned char *buf) {
 		size += 3;
 		height = 0;
 	    }
-	    ptr += 8;
+	    ptr += (8 / BPP);
 	}
 	height++;
     }
