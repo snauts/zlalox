@@ -38,7 +38,8 @@ static volatile byte vblank;
 static void interrupt(void) __naked {
     __asm__("di");
     __asm__("push af");
-    __asm__("ld a, #1");
+    __asm__("ld a, (_vblank)");
+    __asm__("inc a");
     __asm__("ld (_vblank), a");
     __asm__("pop af");
     __asm__("ei");
