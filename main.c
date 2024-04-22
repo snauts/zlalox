@@ -119,7 +119,7 @@ static void clear_screen(void) {
 }
 
 static void track_color(void) {
-#if ZXS
+#ifdef ZXS
     memset(0x5800, 0x01, 0x300);
     memset(0x5880, 0x05, 0x260);
     memset(0x5900, 0x07, 0x1C0);
@@ -128,10 +128,19 @@ static void track_color(void) {
 }
 
 static void track_border(void) {
+#ifdef ZXS
     for (word addr = 0x4000; addr < 0x5800; addr += 0x20) {
 	BYTE(addr + 31 - BORDER) = 0xC0;
 	BYTE(addr + BORDER) = 0x03;
     }
+#endif
+#ifdef CPC
+    for (byte y = 0; y < 192; y++) {
+	word addr = map_y[y];
+	BYTE(addr + DENSITY * BORDER + 1) = 0x7B;
+	BYTE(addr + DENSITY * (BORDER + WIDTH + 1)) = 0xED;
+    }
+#endif
 }
 
 static void put_char(char symbol, byte x, byte y, byte color) {
@@ -539,7 +548,7 @@ static void put_skii_mask(byte dx, byte dy) {
 	    BYTE(map_y[y] + x) = skii_mask[i++];
 	}
     }
-#if ZXS
+#ifdef ZXS
     for (byte x = dx; x < dx + 3; x++) {
 	BYTE(0x5800 + (dy << 2) + x) = (x == dx) ? 5 : 0x45;
     }
