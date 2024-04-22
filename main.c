@@ -69,7 +69,7 @@ static void setup_irq(byte base) {
 static void setup_sys(void) {
     BYTE(IRQ_BASE - 3) = 0xc3;
     WORD(IRQ_BASE - 2) = ADDR(&interrupt);
-    memset(IRQ_BASE, ((IRQ_BASE >> 8) - 1), 0x101);
+    memset(IRQ_BASE, (byte) ((IRQ_BASE >> 8) - 1), 0x101);
     setup_irq(IRQ_BASE >> 8);
 
 #ifdef CPC
