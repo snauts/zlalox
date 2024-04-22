@@ -240,7 +240,7 @@ static void draw_straight(void) {
 }
 
 static void draw_side(byte x, word data) {
-    data += (x & PIXEL_MASK) << POS_SHIFT;
+    data += (x & PIXEL_MASK) << 3;
     word addr = PLAYER_ADDR + LINE_INC + (x >> POS_SHIFT);
     for (byte n = 0; n < 4; n++) {
 	word screen = WORD(addr);
