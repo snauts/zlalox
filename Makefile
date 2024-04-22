@@ -1,4 +1,7 @@
 CFLAGS += -mz80 --nostdinc --nostdlib --no-std-crt0
+CFLAGS += --code-loc 0x8000 --data-loc 0xb000
+
+ENTRY = printf "%d" 0x$$(grep _main zlalox.map | cut -d " " -f 6)
 
 all:
 	make cpc
@@ -14,15 +17,16 @@ prg:
 	hex2bin zlalox.ihx > /dev/null
 
 zxs:
-	CFLAGS="--code-loc 0x8000 --data-loc 0xf000 -DZXS" make prg
-	./bin2tap.sh zlalox
+	CFLAGS=-DZXS make prg
+	bin2tap -b -r $(shell $(ENTRY)) zlalox.bin
 	fuse --no-confirm-actions -g 2x zlalox.tap
 
 cpc:
+	CFLAGS=-DCPC make prg
 	iDSK -n zlalox.dsk
 	unix2dos -n cpc.bas zlalox.bas
-	CFLAGS="--code-loc 0x4000 --data-loc 0x7000 -DCPC" make prg
 	iDSK zlalox.dsk -f -t 0 -i zlalox.bas
+	iDSK zlalox.dsk -f -t 1 -i zlalox.bin
 	mame cpc6128 \
 		-window \
 		-skip_gameinfo \
