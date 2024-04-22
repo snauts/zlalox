@@ -9,6 +9,7 @@
 void main(void);
 
 static volatile byte vblank;
+#ifdef ZXS
 static void interrupt(void) __naked {
     __asm__("di");
     __asm__("push af");
@@ -18,6 +19,7 @@ static void interrupt(void) __naked {
     __asm__("ei");
     __asm__("reti");
 }
+#endif
 
 static void memset(word addr, byte data, word len) {
     while (len-- > 0) { BYTE(addr++) = data; }
@@ -27,7 +29,8 @@ static void __sdcc_call_hl(void) __naked {
     __asm__("jp (hl)");
 }
 
-static void setup_irq(void) {
+static void setup_sys(void) {
+#ifdef ZXS
     __asm__("di");
     BYTE(0xfdfd) = 0xc3;
     WORD(0xfdfe) = ADDR(&interrupt);
@@ -38,6 +41,14 @@ static void setup_irq(void) {
     __asm__("pop af");
     __asm__("im 2");
     __asm__("ei");
+#endif
+#ifdef CPC
+    /* init video mode type #0 */
+    __asm__("push af");
+    __asm__("ld a, #0");
+    __asm__("call  #0xBC0E");
+    __asm__("pop af");
+#endif
 }
 
 static void out_fe(byte a) {
@@ -56,7 +67,12 @@ static void slow_pixel(byte x, byte y) {
 }
 
 static void clear_screen(void) {
+#ifdef ZXS
     memset(0x4000, 0x00, 0x1B00);
+#endif
+#ifdef CPC
+    memset(0xC000, 0x00, 0x4000);
+#endif
 }
 
 static void track_color(void) {
@@ -609,10 +625,27 @@ static void game_loop(void) {
     }
 }
 
+#ifdef CPC
+static word mul80(word x) {
+    word ret = 0;
+    x = x << 3;
+    for (byte i = 0; i < 10; i++) {
+	ret += x;
+    }
+    return ret;
+}
+#endif
+
 static void prepare(void) {
     for (byte y = 0; y < 192; y++) {
+#ifdef ZXS
 	byte f = ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
 	map_y[y] = 0x4000 + (f << 5);
+#endif
+#ifdef CPC
+	word f = ((y & 7) << 11) | mul80(y >> 3);
+	map_y[y] = 0xC000 + f;
+#endif
     }
 }
 
@@ -700,7 +733,7 @@ static void message_bar(void) {
 void main(void) {
     __asm__("ld sp, #0xBFF0");
 
-    setup_irq();
+    setup_sys();
     prepare();
 
     clear_screen();
