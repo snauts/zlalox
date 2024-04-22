@@ -20,6 +20,7 @@ struct Header {
 
 static void save_level(struct Header *header, unsigned char *buf);
 static void save_bitmap(struct Header *header, unsigned char *buf);
+static void save_font_cpc(struct Header *header, unsigned char *buf);
 static void save_bitmap_cpc(struct Header *header, unsigned char *buf);
 
 static unsigned char consume_pixels(unsigned char *buf) {
@@ -60,6 +61,7 @@ int main(int argc, char **argv) {
     if (argc != 3) {
 	printf("USAGE: tga-dump [option] file.tga\n");
 	printf("  -c   save bitmap cpc\n");
+	printf("  -f   save font cpc\n");
 	printf("  -b   save bitmap zx\n");
 	printf("  -l   save level\n");
 	return 0;
@@ -94,6 +96,9 @@ int main(int argc, char **argv) {
 	break;
     case 'c':
 	save_bitmap_cpc(&header, buf);
+	break;
+    case 'f':
+	save_font_cpc(&header, buf);
 	break;
     }
 
@@ -173,6 +178,25 @@ static void save_bitmap_cpc(struct Header *header, unsigned char *buf) {
     for (int i = 0; i < size; i += 4) {
 	printf(" 0x%02x,", consume_pixels_cpc(buf + i));
 	if ((i % 32) == 28) printf("\n");
+    }
+    printf("};\n");
+}
+
+static void save_font_cpc(struct Header *header, unsigned char *buf) {
+    int i = 0;
+    char name[256];
+    int size = header->w * header->h;
+    remove_extension(file_name, name);
+    printf("const byte %s[%d] = {\n", name, size / 4);
+    for (int row = 0; row < header->h; row += 8) {
+	for (int x = 0; x < header->w; x += 8) {
+	    for (int y = 0; y < 8; y++) {
+		int offset = (row + y) * header->w + x;
+		printf(" 0x%02x,", consume_pixels_cpc(buf + offset + 0));
+		printf(" 0x%02x,", consume_pixels_cpc(buf + offset + 4));
+		if ((i++ % 4) == 3) printf("\n");
+	    }
+	}
     }
     printf("};\n");
 }
