@@ -129,7 +129,8 @@ static void setup_sys(void) {
     setup_irq(IRQ_BASE >> 8);
 
 #ifdef CPC
-    cpc_psg(7, 0x3F);
+    cpc_psg(7, 0xBE);
+    cpc_psg(8, 0x00);
     for (byte i = 0; i < SIZE(gate_array_init); i++) {
 	gate_array(gate_array_init[i]);
     }
@@ -338,11 +339,32 @@ static void crash_sound_vblank(void) {
 }
 
 static byte counter;
+
+#ifdef CPC
+static void cpc_level_finish_sound(void) {
+    static word freq;
+    byte step = counter - 192;
+    if (step == 0) {
+	freq = 225;
+	cpc_psg(8, 0x0F);
+    }
+    cpc_psg(0, freq & 0xff);
+    cpc_psg(1, freq >> 8);
+    freq -= 6;
+    if (step >= 32) {
+	cpc_psg(8, 0x10);
+    }
+}
+#endif
+
 static void jerk_vblank(void) {
     byte c = 0, s = 0;
     word i = 0, j = 0;
     word period = (224 - counter) >> 1;
     word width = (counter - 192) << 3;
+#ifdef CPC
+    cpc_level_finish_sound();
+#endif
     while (!is_vsync()) {
 #ifdef ZXS
 	static const byte jerk_color[] = { 0, 1, 5, 7 };
@@ -371,7 +393,6 @@ static void jerk_vblank(void) {
 #ifdef CPC
     gate_array(0x10);
     gate_array(0x54);
-    cpc_psg(7, 0xFF);
 #endif
 }
 
@@ -737,7 +758,6 @@ static void death_loop(void) {
 #endif
 #ifdef CPC
     ticks = 225;
-    cpc_psg(7, 0xBE);
     cpc_psg(8, 0x0F);
 #endif
     for (;;) {
@@ -761,7 +781,7 @@ static void death_loop(void) {
 	counter++;
     }
 #ifdef CPC
-    cpc_psg(7, 0xFF);
+    cpc_psg(8, 0x10);
 #endif
     while (counter++ < 32) {
 	wait_vblank();
