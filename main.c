@@ -622,11 +622,13 @@ static void draw_corner(short y, byte level) {
 
 static void draw_crown(void) {
     short y = ticks - 832;
-    for (byte i = 0; i < 16; i += 2) {
+    byte step = (2 << DENSITY);
+    for (byte i = 0; i < SIZE(crown); i += step) {
 	if (y >= 0 && y < 192) {
 	    word addr = map_y[y];
-	    BYTE(addr + 15) = crown[i];
-	    BYTE(addr + 16) = crown[i + 1];
+	    for (byte x = 0; x < step; x++) {
+		BYTE(addr + x + SHIFT_PIXEL(15)) = crown[i + x];
+	    }
 	}
 	y++;
     }
