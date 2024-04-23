@@ -536,10 +536,12 @@ static void draw_wall(byte offset, byte exit) {
 }
 
 static void gates(void) {
-    draw_wall( 0, 18);
-    draw_wall(48, 13);
-    draw_wall(96, 16);
-    next_level(ticks > 292);
+    draw_wall(  0, 18);
+    draw_wall( 48, 14);
+    draw_wall( 96, 17);
+    draw_wall(144, 12);
+    draw_wall(192, 18);
+    next_level(ticks > (192 + 192 + 4));
     ticks++;
 }
 
