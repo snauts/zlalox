@@ -155,12 +155,22 @@ static const int8 swirl[] = {
      4,  4,  3,  3,  2,  2,  1,  0,
 };
 
+#ifdef ZXS
 static const byte gate_L[] = {
     0xfe, 0xfc, 0xf8, 0xf0, 0xe0, 0xc0, 0x80, 0x00
 };
 static const byte gate_R[] = {
     0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01, 0x00
 };
+#endif
+#ifdef CPC
+static const byte gate_L[] = {
+    0xEE, 0xCC, 0x88, 0x00,
+};
+static const byte gate_R[] = {
+    0x77, 0x33, 0x11, 0x00,
+};
+#endif
 
 #ifdef CPC
 static const byte gate_array_init[] = {

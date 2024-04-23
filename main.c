@@ -558,7 +558,7 @@ static void draw_mover(byte offset, byte exit) {
 	    x = SHIFT_PIXEL(11) + offset;
 	}
 	else {
-	    x = SHIFT_PIXEL(18) - offset;
+	    x = SHIFT_PIXEL(18) - offset + DENSITY;
 	    i = PIXEL_MASK - i;
 	}
 	mover_gate((byte *) (addr + x), i);
