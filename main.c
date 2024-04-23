@@ -684,11 +684,16 @@ static void draw_ski(byte x, byte y, byte angle) {
     }
 }
 
+#define L_BUMP (8 * (WIDTH + 1))
+#define R_BUMP (8 * (WIDTH + BORDER + 1))
+
 static void death_loop(void) {
     byte x1 = pos + 0;
     byte y1 = 163;
+    signed char d1 = -1;
     byte x2 = pos + 2;
     byte y2 = 163;
+    signed char d2 = 1;
     counter = 0;
     ticks = 100;
     for (;;) {
@@ -701,7 +706,10 @@ static void death_loop(void) {
 
 	draw_ski(x1, y1, angle1);
 	draw_ski(x2, y2, angle2);
-	x1--; x2++;
+	if (x1 < L_BUMP) d1 = +1;
+	if (x2 > R_BUMP) d2 = -1;
+	x1 += d1;
+	x2 += d2;
 	if (counter & 1) {
 	    y1 -= dir;
 	    y2 += dir;
