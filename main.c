@@ -530,10 +530,17 @@ static void gates(void) {
     ticks++;
 }
 
-static void mover_gate(word addr, byte i) {
-    BYTE(addr + 2) = gate_R[i];
-    BYTE(addr + 1) = 0;
-    BYTE(addr + 0) = gate_L[7 - i];
+static void mover_gate(byte *addr, byte i) {
+    for (byte j = 0; j <= SHIFT_PIXEL(2); j++) {
+	byte data = 0;
+	if (j == 0) {
+	    data = gate_L[7 - i];
+	}
+	else if (j == SHIFT_PIXEL(2)) {
+	    data = gate_R[i];
+	}
+	*(addr++) = data;
+    }
 }
 
 static void draw_mover(byte offset, byte exit) {
@@ -553,7 +560,7 @@ static void draw_mover(byte offset, byte exit) {
 	    x = SHIFT_PIXEL(18 - (move & 7));
 	    i = 7 - i;
 	}
-	mover_gate(addr + x, i);
+	mover_gate((byte *) (addr + x), i);
     }
 }
 
