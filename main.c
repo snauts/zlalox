@@ -15,7 +15,6 @@
 #define KEY_RIGHT		0x04
 #define TITLE_BUF		title
 #define TITLE_X			4
-#define BITS_PER_PIXEL		1
 #define SHIFT_PER_PIXEL		0
 #define PIXEL_MAP		shift_R
 #define VBLANK_COUNT		1
@@ -30,7 +29,6 @@
 #define KEY_RIGHT		0x40
 #define TITLE_BUF		title_cpc
 #define TITLE_X			16
-#define BITS_PER_PIXEL		2
 #define SHIFT_PER_PIXEL		1
 #define PIXEL_MAP		pixel_map
 #define VBLANK_COUNT		6
@@ -40,6 +38,7 @@
 
 #define POS_SHIFT (3 - SHIFT_PER_PIXEL)
 #define PIXEL_MASK (7 >> SHIFT_PER_PIXEL)
+#define SHIFT_PIXEL(x) ((x) << SHIFT_PER_PIXEL)
 
 void main(void);
 
@@ -152,8 +151,8 @@ static void track_border(void) {
 #ifdef CPC
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	BYTE(addr + BITS_PER_PIXEL * BORDER + 1) = 0x7B;
-	BYTE(addr + BITS_PER_PIXEL * (BORDER + WIDTH + 1)) = 0xED;
+	BYTE(addr + SHIFT_PIXEL(BORDER) + 1) = 0x7B;
+	BYTE(addr + SHIFT_PIXEL(BORDER + WIDTH + 1)) = 0xED;
     }
 #endif
 }
@@ -231,7 +230,7 @@ static byte detect, collision;
 static void draw_straight(void) {
     word addr = PLAYER_ADDR + (pos >> POS_SHIFT);
     word data = pixels[pos & PIXEL_MASK];
-    for (byte n = 0; n < 5; n++) {
+    for (byte n = 0; n< 5; n++) {
 	word screen = WORD(addr);
 	if (detect && (screen & data)) collision = 1;
 	WORD(addr) = screen ^ data;
@@ -565,9 +564,9 @@ static void display_title(byte dx, byte dy);
 static void put_skii_mask(byte dx, byte dy) {
     byte i = 0;
     dy = dy << 3;
-    dx = dx << (BITS_PER_PIXEL - 1);
+    dx = SHIFT_PIXEL(dx);
     for (byte y = dy; y < dy + 6; y++) {
-	for (byte x = dx; x < dx + 3 * BITS_PER_PIXEL; x++) {
+	for (byte x = dx; x < dx + SHIFT_PIXEL(3); x++) {
 	    BYTE(map_y[y] + x) = skii_mask[i++];
 	}
     }
@@ -745,7 +744,7 @@ static void display_title(byte dx, byte dy) {
     word i = 0, j = 0;
     dy = dy << 3;
     for (byte y = dy; y < dy + 40; y++) {
-	for (byte x = dx; x < dx + 24 * BITS_PER_PIXEL; x++) {
+	for (byte x = dx; x < dx + SHIFT_PIXEL(24); x++) {
 	    BYTE(map_y[y] + x) = TITLE_BUF[i++];
 	}
     }
@@ -816,16 +815,14 @@ static void start_screen(void) {
 }
 
 static byte on_border(byte x) {
-    return x == (BORDER * BITS_PER_PIXEL + SHIFT_PER_PIXEL)
-	|| x == ((BORDER + WIDTH + 1) * BITS_PER_PIXEL);
+    return x == (SHIFT_PIXEL(BORDER) + SHIFT_PER_PIXEL)
+	|| x == (SHIFT_PIXEL(BORDER + WIDTH + 1));
 }
 
 static void clear_lives(void) {
     for (byte y = (lives + 2) << 3; y < (LIVES + 2) << 3; y++) {
-	byte from = 22 << SHIFT_PER_PIXEL;
-	byte to = 25 << SHIFT_PER_PIXEL;;
 	word addr = map_y[y];
-	for (byte x = from; x < to; x++) {
+	for (byte x = SHIFT_PIXEL(22); x < SHIFT_PIXEL(25); x++) {
 	    BYTE(addr + x) = 0;
 	}
     }
@@ -835,8 +832,8 @@ static void clear_track(void) {
     clear_lives();
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	byte from = (y < 128 ? 11 : 4) << SHIFT_PER_PIXEL;
-	byte to = (y < 128 ? 21 : 28) << SHIFT_PER_PIXEL;
+	byte from = SHIFT_PIXEL(y < 128 ? 11 : 4);
+	byte to = SHIFT_PIXEL(y < 128 ? 21 : 28);
 	for (byte x = from; x < to; x++) {
 	    if (!on_border(x)) {
 		BYTE(addr + x) = 0x00;
