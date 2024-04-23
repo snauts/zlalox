@@ -596,16 +596,25 @@ static void draw_corner(short y, byte level) {
 		b1 = gate_L[i - 1];
 		b2 = gate_R[i - 1];
 	    }
+	    BYTE(addr + SHIFT_PIXEL(level + 11)) = b1;
+	    BYTE(addr + SHIFT_PIXEL(20 - level) + DENSITY) = b2;
 #else
 	    if (i > 4) {
 		b1 = gate_L[i - 5];
 		b2 = gate_R[i - 5];
 	    }
-	    BYTE(addr + SHIFT_PIXEL(level + 11)) = 0xff;
-	    BYTE(addr + SHIFT_PIXEL(20 - level) + 1) = 0xff;
-#endif
+	    BYTE(addr + SHIFT_PIXEL(level + 11)) = b1;
+	    BYTE(addr + SHIFT_PIXEL(20 - level) + DENSITY) = b2;
+
+	    b1 = b2 = i > 0 ? 0x00 : 0xff;
+
+	    if (0 < i && i < 5) {
+		b1 = gate_L[i - 1];
+		b2 = gate_R[i - 1];
+	    }
 	    BYTE(addr + SHIFT_PIXEL(level + 11) + DENSITY) = b1;
 	    BYTE(addr + SHIFT_PIXEL(20 - level)) = b2;
+#endif
 	}
 	y++;
     }
