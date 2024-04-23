@@ -748,7 +748,7 @@ static void next_pattern(byte inc) {
 
 static void advance(void) {
     while (segment > pattern) {
-	byte diff = segment[-2];
+	byte diff = segment[-1];
 	if (diff <= counter) {
 	    counter -= diff;
 	    segment -= 3;
@@ -764,15 +764,14 @@ static void advance(void) {
 
 static void scroll(void) {
     const byte *ptr = segment;
-    byte x = ptr[0];
+    byte x = *ptr;
     byte y = counter;
     byte *addr;
     while (y < 192 && x > 0) {
 	addr = (byte *) map_y[y] + x;
-	*addr = ptr[2];
-	y += ptr[1];
-	ptr += 3;
-	x = ptr[0];
+	*addr = *(++ptr);
+	y += *(++ptr);
+	x = *(++ptr);
     }
     counter++;
     advance();

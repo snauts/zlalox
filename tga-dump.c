@@ -143,8 +143,8 @@ static void save_level(struct Header *header, unsigned char *buf) {
 	    if (row[i] != pixels) {
 		row[i] = pixels;
 		out[size + 0] = i + START;
-		out[size + 1] = height;
-		out[size + 2] = pixels;
+		out[size + 1] = pixels;
+		out[size + 2] = height;
 		size += 3;
 		height = 0;
 	    }
