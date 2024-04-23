@@ -15,7 +15,7 @@
 #define KEY_RIGHT		0x04
 #define TITLE_BUF		title
 #define TITLE_X			4
-#define SHIFT_PER_PIXEL		0
+#define DENSITY			0
 #define PIXEL_MAP		shift_R
 #define PLAYER_ADDR		0x5180
 #define LINE_INC		0x100
@@ -29,15 +29,15 @@
 #define KEY_RIGHT		0x40
 #define TITLE_BUF		title_cpc
 #define TITLE_X			16
-#define SHIFT_PER_PIXEL		1
+#define DENSITY			1
 #define PIXEL_MAP		pixel_map
 #define PLAYER_ADDR		0xCE40
 #define LINE_INC		0x800
 #endif
 
-#define POS_SHIFT (3 - SHIFT_PER_PIXEL)
-#define PIXEL_MASK (7 >> SHIFT_PER_PIXEL)
-#define SHIFT_PIXEL(x) ((x) << SHIFT_PER_PIXEL)
+#define POS_SHIFT (3 - DENSITY)
+#define PIXEL_MASK (7 >> DENSITY)
+#define SHIFT_PIXEL(x) ((x) << DENSITY)
 
 #define KEY_BOTH (KEY_LEFT | KEY_RIGHT)
 
@@ -428,8 +428,8 @@ static void next_level(byte is_ending) {
 
 static void set_row(short y, byte data) {
     if (0 <= y && y < 192) {
-	word addr = map_y[y] + (11 << SHIFT_PER_PIXEL);
-	for (byte x = 0; x < (WIDTH << SHIFT_PER_PIXEL); x++) {
+	word addr = map_y[y] + (11 << DENSITY);
+	for (byte x = 0; x < (WIDTH << DENSITY); x++) {
 	    BYTE(addr++) = data;
 	}
     }
@@ -534,7 +534,7 @@ static void mover_gate(byte *addr, byte i) {
     for (byte j = 0; j <= SHIFT_PIXEL(2); j++) {
 	byte data = 0;
 	if (j == 0) {
-	    data = gate_L[7 - i];
+	    data = gate_L[PIXEL_MASK - i];
 	}
 	else if (j == SHIFT_PIXEL(2)) {
 	    data = gate_R[i];
@@ -550,15 +550,15 @@ static void draw_mover(byte offset, byte exit) {
 
     if (y < 192) {
 	word addr = map_y[y];
-	byte x, i = (y & PIXEL_MASK);
-	byte move = (ticks >> 3) + exit;
+	byte x, i = ((y >> 1) & PIXEL_MASK);
+	byte move = (ticks >> (4 - DENSITY)) + exit;
 
 	if ((move & 8) == 0) {
-	    x = SHIFT_PIXEL((move & 7) + 11);
+	    x = SHIFT_PIXEL(11) + (move & 7);
 	}
 	else {
-	    x = SHIFT_PIXEL(18 - (move & 7));
-	    i = 7 - i;
+	    x = SHIFT_PIXEL(18) - (move & 7);
+	    i = PIXEL_MASK - i;
 	}
 	mover_gate((byte *) (addr + x), i);
     }
@@ -678,7 +678,7 @@ static void finish_game(void) {
 
 static void end_game(void) {
     clear_screen();
-    put_str("GAME OVER", 11 + SHIFT_PER_PIXEL * 4, 11, 5);
+    put_str("GAME OVER", 11 + DENSITY * 4, 11, 5);
     wait_for_button();
     main();
 }
