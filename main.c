@@ -125,24 +125,23 @@ static void setup_sys(void) {
     setup_irq(IRQ_BASE >> 8);
 
 #ifdef CPC
+    cpc_psg(7, 0x3F);
     for (byte i = 0; i < SIZE(gate_array_init); i++) {
 	gate_array(gate_array_init[i]);
     }
 #endif
 }
 
-static void out_fe(byte data) {
 #ifdef ZXS
+static void out_fe(byte data) {
     __asm__("out (#0xfe), a"); data;
-#else
-    data;
-#endif
 }
 
 static byte in_fe(byte a) __naked {
     __asm__("in a, (#0xfe)"); a;
     __asm__("ret");
 }
+#endif
 
 static word map_y[192];
 
@@ -308,12 +307,15 @@ static void wait_vblank(void) {
     vblank = 0;
 }
 
+#ifdef ZXS
 static void vblank_delay(word ticks) {
     for (word i = 0; i < ticks; i++) { if (is_vsync()) break; }
 }
+#endif
 
 static word ticks;
 static void crash_sound_vblank(int8 step) {
+#ifdef ZXS
     while (!is_vsync()) {
 	out_fe(0x10);
 	vblank_delay(ticks);
@@ -322,6 +324,14 @@ static void crash_sound_vblank(int8 step) {
 	ticks += step;
     }
     vblank = 0;
+#endif
+#ifdef CPC
+    cpc_psg(7, 0xBE);
+    cpc_psg(0, 0xFF);
+    cpc_psg(1, 0x01);
+    cpc_psg(8, 0x0F);
+    wait_vblank();
+#endif
 }
 
 static byte counter;
@@ -352,7 +362,14 @@ static void jerk_vblank(void) {
 	i++;
     }
     vblank = 0;
+#ifdef ZXS
     out_fe(0);
+#endif
+#ifdef CPC
+    gate_array(0x10);
+    gate_array(0x54);
+    cpc_psg(7, 0x3F);
+#endif
 }
 
 static void game_vblank(void) {
@@ -809,6 +826,7 @@ static void ice_castle(void) {
     word period = tune[0];
 
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
+#ifdef ZXS
 	if (period > 0) {
 	    out_fe(0x10);
 	    delay(period);
@@ -832,6 +850,7 @@ static void ice_castle(void) {
 		duration = 0;
 	    }
 	}
+#endif
     }
 }
 
