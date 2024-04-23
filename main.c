@@ -763,12 +763,16 @@ static void advance(void) {
 }
 
 static void scroll(void) {
-    byte y = counter;
     const byte *ptr = segment;
-    while (y < 192 && ptr[0] > 0) {
-	BYTE(map_y[y] + ptr[0]) = ptr[2];
+    byte x = ptr[0];
+    byte y = counter;
+    byte *addr;
+    while (y < 192 && x > 0) {
+	addr = (byte *) map_y[y] + x;
+	*addr = ptr[2];
 	y += ptr[1];
 	ptr += 3;
+	x = ptr[0];
     }
     counter++;
     advance();
