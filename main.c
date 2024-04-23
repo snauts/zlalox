@@ -601,11 +601,11 @@ static void draw_corner(short y, byte level) {
 		b1 = gate_L[i - 5];
 		b2 = gate_R[i - 5];
 	    }
-	    BYTE(addr + level + SHIFT_PIXEL(11)) = 0xff;
-	    BYTE(addr + SHIFT_PIXEL(20) - level + 1) = 0xff;
+	    BYTE(addr + SHIFT_PIXEL(level + 11)) = 0xff;
+	    BYTE(addr + SHIFT_PIXEL(20 - level) + 1) = 0xff;
 #endif
-	    BYTE(addr + level + SHIFT_PIXEL(11) + DENSITY) = b1;
-	    BYTE(addr + SHIFT_PIXEL(20) - level) = b2;
+	    BYTE(addr + SHIFT_PIXEL(level + 11) + DENSITY) = b1;
+	    BYTE(addr + SHIFT_PIXEL(20 - level)) = b2;
 	}
 	y++;
     }
@@ -630,7 +630,7 @@ static void castle(void) {
 	word y = ticks;
 	while (y >= 200) {
 	    y = y - 200;
-	    level += DENSITY;
+	    level++;
 	}
 	draw_corner(y - 8, level);
 	draw_crown();
