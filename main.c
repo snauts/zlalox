@@ -110,8 +110,12 @@ static void setup_sys(void) {
 #endif
 }
 
-static void out_fe(byte a) {
-    __asm__("out (#0xfe), a"); a;
+static void out_fe(byte data) {
+#ifdef ZXS
+    __asm__("out (#0xfe), a"); data;
+#else
+    data;
+#endif
 }
 
 static byte in_fe(byte a) __naked {
