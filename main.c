@@ -552,12 +552,13 @@ static void draw_mover(byte offset, byte exit) {
 	word addr = map_y[y];
 	byte x, i = ((y >> 1) & PIXEL_MASK);
 	byte move = (ticks >> (4 - DENSITY)) + exit;
+	byte offset = (move & ((8 << DENSITY) - 1));
 
-	if ((move & 8) == 0) {
-	    x = SHIFT_PIXEL(11) + (move & 7);
+	if ((move & (8 << DENSITY)) == 0) {
+	    x = SHIFT_PIXEL(11) + offset;
 	}
 	else {
-	    x = SHIFT_PIXEL(18) - (move & 7);
+	    x = SHIFT_PIXEL(18) - offset;
 	    i = PIXEL_MASK - i;
 	}
 	mover_gate((byte *) (addr + x), i);
