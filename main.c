@@ -17,9 +17,9 @@
 #define TITLE_X			4
 #define SHIFT_PER_PIXEL		0
 #define PIXEL_MAP		shift_R
-#define VBLANK_COUNT		1
 #define PLAYER_ADDR		0x5180
 #define LINE_INC		0x100
+#define is_vsync()		vblank
 #endif
 #ifdef CPC
 #define SETUP_SP()		__asm__("ld sp, #0xa000")
@@ -31,7 +31,6 @@
 #define TITLE_X			16
 #define SHIFT_PER_PIXEL		1
 #define PIXEL_MAP		pixel_map
-#define VBLANK_COUNT		6
 #define PLAYER_ADDR		0xCE40
 #define LINE_INC		0x800
 #endif
@@ -46,13 +45,14 @@ void main(void);
 
 static volatile byte vblank;
 static void interrupt(void) __naked {
+#ifdef ZXS
     __asm__("di");
     __asm__("push af");
-    __asm__("ld a, (_vblank)");
-    __asm__("inc a");
+    __asm__("ld a, #1");
     __asm__("ld (_vblank), a");
     __asm__("pop af");
     __asm__("ei");
+#endif
     __asm__("reti");
 }
 
@@ -76,6 +76,12 @@ static byte cpc_keys(void) __naked {
     __asm__("out (c), c");
     __asm__("ld b, #0xf4");
     __asm__("in a, (c)");
+    __asm__("ret");
+}
+static byte is_vsync(void) __naked {
+    __asm__("ld b, #0xf5");
+    __asm__("in a, (c)");
+    __asm__("and a, #1");
     __asm__("ret");
 }
 #endif
@@ -281,17 +287,17 @@ static void init_variables(void) {
 }
 
 static void wait_vblank(void) {
-    while (vblank < VBLANK_COUNT) { }
+    while (!is_vsync()) { }
     vblank = 0;
 }
 
 static void vblank_delay(word ticks) {
-    for (word i = 0; i < ticks; i++) { if (vblank) break; }
+    for (word i = 0; i < ticks; i++) { if (is_vsync()) break; }
 }
 
 static word ticks;
 static void crash_sound_vblank(int8 step) {
-    while (vblank < VBLANK_COUNT) {
+    while (!is_vsync()) {
 	out_fe(0x10);
 	vblank_delay(ticks);
 	out_fe(0x0);
@@ -307,7 +313,7 @@ static void jerk_vblank(void) {
     word i = 0, j = 0;
     word period = (224 - counter) >> 1;
     word width = (counter - 192) << 3;
-    while (vblank < VBLANK_COUNT) {
+    while (!is_vsync()) {
 #ifdef ZXS
 	static const byte jerk_color[] = { 0, 1, 5, 7 };
 	out_fe(jerk_color[c] | s);
