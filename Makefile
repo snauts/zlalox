@@ -16,7 +16,7 @@ prg:
 	@echo convert levels to headers
 	@$(foreach F, $(wildcard level/*), ./tga-dump -l $(F) >> level.h;)
 	@echo compile zlalox with sdcc
-	sdcc $(CFLAGS) $(TYPE) main.c -o zlalox.ihx
+	@sdcc $(CFLAGS) $(TYPE) main.c -o zlalox.ihx
 	hex2bin zlalox.ihx > /dev/null
 
 zxs_bin: dmp

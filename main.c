@@ -894,6 +894,33 @@ static void delay(word loops) {
     for (word i = 0; i < loops; i++) { }
 }
 
+static byte is_vblank_start(void) {
+#ifdef ZXS
+    byte ret = vblank;
+    if (ret) vblank = 0;
+    return ret;
+#endif
+#ifdef CPC
+    byte new = is_vsync();
+    byte old = vblank;
+    vblank = new;
+    return new && !old;
+#endif
+}
+
+#ifdef CPC
+static void cpc_play_note(word frequency, byte volume) {
+    if (frequency > 0) {
+	cpc_psg(0, frequency & 0xff);
+	cpc_psg(1, frequency >> 8);
+    }
+    cpc_psg(8, volume);
+}
+#define PLAY_NOTE(f, v) cpc_play_note(f, v)
+#else
+#define PLAY_NOTE(f, v) cpc_play_note(f, v)
+#endif
+
 static void ice_castle(void) {
     const byte *tune = music;
 
@@ -902,6 +929,7 @@ static void ice_castle(void) {
     byte duration = 0;
     word period = tune[0];
 
+    PLAY_NOTE(period, 0xf);
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
 #ifdef ZXS
 	if (period > 0) {
@@ -910,10 +938,11 @@ static void ice_castle(void) {
 	    out_fe(0x00);
 	    delay(period);
 	}
-	if (vblank) {
+#endif
+	if (is_vblank_start()) {
 	    duration++;
-	    vblank = 0;
 	    if (duration >= decay) {
+		PLAY_NOTE(0, 0x10);
 		period = 0;
 	    }
 	    if (duration >= tune[1]) {
@@ -924,10 +953,10 @@ static void ice_castle(void) {
 		}
 		decay = tune[1] == L16 ? 3 : 9;
 		period = tune[0] << octave;
+		PLAY_NOTE(period, 0xf);
 		duration = 0;
 	    }
 	}
-#endif
     }
 }
 
