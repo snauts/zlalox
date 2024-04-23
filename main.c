@@ -154,8 +154,8 @@ static void track_color(void) {
 static void track_border(void) {
 #ifdef ZXS
     for (word addr = 0x4000; addr < 0x5800; addr += 0x20) {
-	BYTE(addr + 31 - BORDER) = 0xC0;
-	BYTE(addr + BORDER) = 0x03;
+	BYTE(addr + 31 - BORDER) = 0xF0;
+	BYTE(addr + BORDER) = 0x0F;
     }
 #endif
 #ifdef CPC
