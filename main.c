@@ -157,8 +157,12 @@ static void track_border(void) {
 #ifdef CPC
     for (byte y = 0; y < 192; y++) {
 	word addr = map_y[y];
-	BYTE(addr + SHIFT_PIXEL(BORDER) + 1) = 0x7B;
-	BYTE(addr + SHIFT_PIXEL(BORDER + WIDTH + 1)) = 0xED;
+	addr += SHIFT_PIXEL(BORDER);
+	BYTE(addr++) = 0x03;
+	BYTE(addr++) = 0xF3;
+	addr += SHIFT_PIXEL(WIDTH);
+	BYTE(addr++) = 0xFC;
+	BYTE(addr++) = 0x0C;
     }
 #endif
 }
@@ -821,8 +825,14 @@ static void start_screen(void) {
 }
 
 static byte on_border(byte x) {
-    return x == (SHIFT_PIXEL(BORDER) + SHIFT_PER_PIXEL)
-	|| x == (SHIFT_PIXEL(BORDER + WIDTH + 1));
+#define BORDER_2 (BORDER + WIDTH + 1)
+    return x == SHIFT_PIXEL(BORDER)
+	|| x == SHIFT_PIXEL(BORDER_2)
+#if SHIFT_PER_PIXEL > 0
+	|| x == SHIFT_PIXEL(BORDER) + SHIFT_PER_PIXEL
+	|| x == SHIFT_PIXEL(BORDER_2) + SHIFT_PER_PIXEL
+#endif
+	; /* <--- he-he */
 }
 
 static void clear_lives(void) {
