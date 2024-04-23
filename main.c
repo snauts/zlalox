@@ -40,6 +40,8 @@
 #define PIXEL_MASK (7 >> SHIFT_PER_PIXEL)
 #define SHIFT_PIXEL(x) ((x) << SHIFT_PER_PIXEL)
 
+#define KEY_BOTH (KEY_LEFT | KEY_RIGHT)
+
 void main(void);
 
 static volatile byte vblank;
@@ -769,7 +771,7 @@ static void ice_castle(void) {
     byte duration = 0;
     word period = tune[0];
 
-    while ((in_fe(0xfe) & 0x6) == 0x6) {
+    while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
 	if (period > 0) {
 	    out_fe(0x10);
 	    delay(period);
