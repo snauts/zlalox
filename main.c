@@ -918,7 +918,7 @@ static void cpc_play_note(word frequency, byte volume) {
 }
 #define PLAY_NOTE(f, v) cpc_play_note(f, v)
 #else
-#define PLAY_NOTE(f, v) cpc_play_note(f, v)
+#define PLAY_NOTE(f, v)
 #endif
 
 static void ice_castle(void) {
