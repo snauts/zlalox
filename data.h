@@ -1,3 +1,4 @@
+#ifdef ZXS
 #define D4  145		// 293.7
 #define E4  128		// 329.6
 #define F4s 113		// 369.9
@@ -7,6 +8,19 @@
 #define B4  83		// 493.9
 #define C5s 73		// 554.4
 #define D5  68		// 587.3
+#endif
+
+#ifdef CPC
+#define D4  213		// 293.7
+#define E4  190		// 329.6
+#define F4s 169		// 369.9
+#define G4  159		// 392.0
+#define G4s 100		// 415.3
+#define A4  150		// 440.0
+#define B4  127		// 493.9
+#define C5s 113		// 554.4
+#define D5  106		// 587.3
+#endif
 
 #define L4  24
 #define L8D 18
