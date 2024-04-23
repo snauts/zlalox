@@ -62,7 +62,6 @@ static void gate_array(byte reg) {
     __asm__("out (c), a"); reg;
 }
 static byte cpc_keys(void) __naked {
-    __asm__("di");
     __asm__("ld bc, #0xf782");
     __asm__("out (c), c");
     __asm__("ld bc, #0xf40e");
@@ -77,7 +76,6 @@ static byte cpc_keys(void) __naked {
     __asm__("out (c), c");
     __asm__("ld b, #0xf4");
     __asm__("in a, (c)");
-    __asm__("ei");
     __asm__("ret");
 }
 #endif
