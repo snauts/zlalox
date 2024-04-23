@@ -517,11 +517,10 @@ static void draw_wall(byte offset, byte exit) {
     if (y >= 96 && y < 192) {
 	byte i = y < 104 ? (y & 7) : 7;
 	word addr = map_y[y] + SHIFT_PIXEL(exit);
-#if ZXS
+#if DENSITY == 0
 	BYTE(addr + 1) = gate_R[i];
 	BYTE(addr + 0) = gate_L[i];
-#endif
-#if CPC
+#else
 	if (i < 4) {
 	    BYTE(addr + 2) = gate_R[i];
 	    BYTE(addr + 1) = gate_L[i];
@@ -592,12 +591,21 @@ static void draw_corner(short y, byte level) {
 	if (y >= 0 && y < 192) {
 	    word addr = map_y[y];
 	    byte b1 = 0xff, b2 = 0xff;
+#if DENSITY == 0
 	    if (i > 0) {
 		b1 = gate_L[i - 1];
 		b2 = gate_R[i - 1];
 	    }
-	    BYTE(addr + level + 11) = b1;
-	    BYTE(addr + 20 - level) = b2;
+#else
+	    if (i > 4) {
+		b1 = gate_L[i - 5];
+		b2 = gate_R[i - 5];
+	    }
+	    BYTE(addr + level + SHIFT_PIXEL(11)) = 0xff;
+	    BYTE(addr + SHIFT_PIXEL(20) - level + 1) = 0xff;
+#endif
+	    BYTE(addr + level + SHIFT_PIXEL(11) + DENSITY) = b1;
+	    BYTE(addr + SHIFT_PIXEL(20) - level) = b2;
 	}
 	y++;
     }
@@ -622,7 +630,7 @@ static void castle(void) {
 	word y = ticks;
 	while (y >= 200) {
 	    y = y - 200;
-	    level++;
+	    level += DENSITY;
 	}
 	draw_corner(y - 8, level);
 	draw_crown();
