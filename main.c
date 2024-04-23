@@ -129,7 +129,7 @@ static void setup_sys(void) {
     setup_irq(IRQ_BASE >> 8);
 
 #ifdef CPC
-    cpc_psg(7, 0xBE);
+    cpc_psg(7, 0xBC);
     cpc_psg(8, 0x00);
     for (byte i = 0; i < SIZE(gate_array_init); i++) {
 	gate_array(gate_array_init[i]);
@@ -916,16 +916,17 @@ static byte is_vblank_start(void) {
 }
 
 #ifdef CPC
-static void cpc_play_note(word frequency, byte volume) {
+static void cpc_play_note(word frequency, byte volume, byte channel) {
     if (frequency > 0) {
-	cpc_psg(0, frequency & 0xff);
-	cpc_psg(1, frequency >> 8);
+	byte offset = (channel << 1);
+	cpc_psg(0 + offset, frequency & 0xff);
+	cpc_psg(1 + offset, frequency >> 8);
     }
-    cpc_psg(8, volume);
+    cpc_psg(8 + channel, volume);
 }
-#define PLAY_NOTE(f, v) cpc_play_note(f, v)
+#define PLAY_NOTE(f, v, c) cpc_play_note(f, v, c)
 #else
-#define PLAY_NOTE(f, v)
+#define PLAY_NOTE(f, v, c)
 #endif
 
 static void ice_castle(void) {
@@ -936,7 +937,7 @@ static void ice_castle(void) {
     byte duration = 0;
     word period = tune[0];
 
-    PLAY_NOTE(period, 0xf);
+    PLAY_NOTE(period, 0xf, 0);
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
 #ifdef ZXS
 	if (period > 0) {
@@ -949,7 +950,7 @@ static void ice_castle(void) {
 	if (is_vblank_start()) {
 	    duration++;
 	    if (duration >= decay) {
-		PLAY_NOTE(0, 0x10);
+		PLAY_NOTE(0, 0x10, 0);
 		period = 0;
 	    }
 	    if (duration >= tune[1]) {
@@ -960,7 +961,7 @@ static void ice_castle(void) {
 		}
 		decay = tune[1] == L16 ? 3 : 9;
 		period = tune[0] << octave;
-		PLAY_NOTE(period, 0xf);
+		PLAY_NOTE(period, 0xf, 0);
 		duration = 0;
 	    }
 	}
