@@ -15,8 +15,8 @@
 #define E4  190		// 329.6
 #define F4s 169		// 369.9
 #define G4  159		// 392.0
-#define G4s 100		// 415.3
-#define A4  150		// 440.0
+#define G4s 150		// 415.3
+#define A4  142		// 440.0
 #define B4  127		// 493.9
 #define C5s 113		// 554.4
 #define D5  106		// 587.3
