@@ -76,6 +76,10 @@ static byte cpc_keys(void) __naked {
     __asm__("out (c), c");
     __asm__("ld b, #0xf4");
     __asm__("in a, (c)");
+    __asm__("ld bc, #0xf782");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf600");
+    __asm__("out (c), c");
     __asm__("ret");
 }
 static byte is_vsync(void) __naked {
@@ -314,22 +318,21 @@ static void vblank_delay(word ticks) {
 #endif
 
 static word ticks;
-static void crash_sound_vblank(int8 step) {
+static void crash_sound_vblank(void) {
 #ifdef ZXS
     while (!is_vsync()) {
 	out_fe(0x10);
 	vblank_delay(ticks);
 	out_fe(0x0);
 	vblank_delay(ticks);
-	ticks += step;
+	ticks += 20;
     }
     vblank = 0;
 #endif
 #ifdef CPC
-    cpc_psg(7, 0xBE);
-    cpc_psg(0, 0xFF);
-    cpc_psg(1, 0x01);
-    cpc_psg(8, 0x0F);
+    cpc_psg(0, ticks & 0xff);
+    cpc_psg(1, ticks >> 8);
+    ticks += 64;
     wait_vblank();
 #endif
 }
@@ -368,7 +371,7 @@ static void jerk_vblank(void) {
 #ifdef CPC
     gate_array(0x10);
     gate_array(0x54);
-    cpc_psg(7, 0x3F);
+    cpc_psg(7, 0xFF);
 #endif
 }
 
@@ -729,14 +732,21 @@ static void death_loop(void) {
     byte y2 = 163;
     signed char d2 = 1;
     counter = 0;
+#ifdef ZXS
     ticks = 100;
+#endif
+#ifdef CPC
+    ticks = 225;
+    cpc_psg(7, 0xBE);
+    cpc_psg(8, 0x0F);
+#endif
     for (;;) {
 	byte angle1 = counter & 0xe;
 	byte angle2 = 14 - angle1;
 	draw_ski(x1, y1, angle1);
 	draw_ski(x2, y2, angle2);
 	if (counter > 16) break;
-	crash_sound_vblank(20);
+	crash_sound_vblank();
 
 	draw_ski(x1, y1, angle1);
 	draw_ski(x2, y2, angle2);
@@ -750,6 +760,9 @@ static void death_loop(void) {
 	}
 	counter++;
     }
+#ifdef CPC
+    cpc_psg(7, 0xFF);
+#endif
     while (counter++ < 32) {
 	wait_vblank();
     }
