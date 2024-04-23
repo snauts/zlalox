@@ -558,7 +558,7 @@ static void mover_gate(byte *addr, byte i) {
     }
 }
 
-static void draw_mover(byte offset, byte exit) {
+static void draw_mover(word offset, byte exit) {
     short y = ticks - offset;
     set_row(y, 0xff);
     set_row(y - 4, 0);
@@ -581,10 +581,12 @@ static void draw_mover(byte offset, byte exit) {
 }
 
 static void movers(void) {
-    draw_mover( 0,  0);
-    draw_mover(64,  6);
+    draw_mover(  0,  0);
+    draw_mover( 64,  6);
     draw_mover(128, 14);
-    next_level(ticks > 336);
+    draw_mover(192, 18);
+    draw_mover(256,  8);
+    next_level(ticks > 256 + 192 + 16);
     ticks++;
 }
 
