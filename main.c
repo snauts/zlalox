@@ -516,9 +516,23 @@ static void draw_wall(byte offset, byte exit) {
     set_row(y - 4, 0);
     if (y >= 96 && y < 192) {
 	byte i = y < 104 ? (y & 7) : 7;
-	word addr = map_y[y] + exit;
+	word addr = map_y[y] + SHIFT_PIXEL(exit);
+#if ZXS
 	BYTE(addr + 1) = gate_R[i];
-	BYTE(addr) = gate_L[i];
+	BYTE(addr + 0) = gate_L[i];
+#endif
+#if CPC
+	if (i < 4) {
+	    BYTE(addr + 2) = gate_R[i];
+	    BYTE(addr + 1) = gate_L[i];
+	}
+	else {
+	    BYTE(addr + 3) = gate_R[i - 4];
+	    BYTE(addr + 2) = 0;
+	    BYTE(addr + 1) = 0;
+	    BYTE(addr + 0) = gate_L[i - 4];
+	}
+#endif
     }
 }
 
