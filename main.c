@@ -543,15 +543,17 @@ static void draw_mover(byte offset, byte exit) {
 
     if (y < 192) {
 	word addr = map_y[y];
-	byte i = ((y >> 1) & 7);
-	byte move = (ticks >> 4) + exit;
+	byte x, i = (y & PIXEL_MASK);
+	byte move = (ticks >> 3) + exit;
 
 	if ((move & 8) == 0) {
-	    mover_gate(addr + (move & 7) + 11, i);
+	    x = SHIFT_PIXEL((move & 7) + 11);
 	}
 	else {
-	    mover_gate(addr + 18 - (move & 7), 7 - i);
+	    x = SHIFT_PIXEL(18 - (move & 7));
+	    i = 7 - i;
 	}
+	mover_gate(addr + x, i);
     }
 }
 
