@@ -84,6 +84,23 @@ static byte is_vsync(void) __naked {
     __asm__("and a, #1");
     __asm__("ret");
 }
+static byte cpc_psg(byte reg, byte val) __naked {
+    __asm__("ld b, #0xf4");
+    __asm__("ld c, a"); reg;
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf6c0");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf600");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf680");
+    __asm__("out (c), c");
+    __asm__("ld b, #0xf4");
+    __asm__("ld c, l"); val;
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xf600");
+    __asm__("out (c), c");
+    __asm__("ret");
+}
 #endif
 
 static void memset(word addr, byte data, word len) {
