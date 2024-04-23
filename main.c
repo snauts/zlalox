@@ -836,38 +836,19 @@ static void start_screen(void) {
     wait_for_button();
 }
 
-static byte on_border(byte x) {
-#define BORDER_2 (BORDER + WIDTH + 1)
-    return x == SHIFT_PIXEL(BORDER)
-	|| x == SHIFT_PIXEL(BORDER_2)
-#if SHIFT_PER_PIXEL > 0
-	|| x == SHIFT_PIXEL(BORDER) + SHIFT_PER_PIXEL
-	|| x == SHIFT_PIXEL(BORDER_2) + SHIFT_PER_PIXEL
-#endif
-	; /* <--- he-he */
-}
-
-static void clear_lives(void) {
-    for (byte y = (lives + 2) << 3; y < (LIVES + 2) << 3; y++) {
-	word addr = map_y[y];
-	for (byte x = SHIFT_PIXEL(22); x < SHIFT_PIXEL(25); x++) {
-	    BYTE(addr + x) = 0;
+static void clear_rectangle(byte x1, byte y1, byte x2, byte y2) {
+    for (byte y = y1; y < y2; y++) {
+	byte *addr = (byte *) (map_y[y] + x1);
+	for (byte x = x1; x < x2; x++) {
+	    *(addr++) = 0;
 	}
     }
 }
 
 static void clear_track(void) {
-    clear_lives();
-    for (byte y = 0; y < 192; y++) {
-	word addr = map_y[y];
-	byte from = SHIFT_PIXEL(y < 128 ? 11 : 4);
-	byte to = SHIFT_PIXEL(y < 128 ? 21 : 28);
-	for (byte x = from; x < to; x++) {
-	    if (!on_border(x)) {
-		BYTE(addr + x) = 0x00;
-	    }
-	}
-    }
+    clear_rectangle(SHIFT_PIXEL(11), 0, SHIFT_PIXEL(21), 192);
+    clear_rectangle(SHIFT_PIXEL(22), (lives + 2) << 3,
+		    SHIFT_PIXEL(25), (LIVES + 2) << 3);
 }
 
 static void message_bar(void) {
