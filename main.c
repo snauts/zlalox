@@ -240,7 +240,7 @@ static byte detect, collision;
 static void draw_straight(void) {
     word addr = PLAYER_ADDR + (pos >> POS_SHIFT);
     word data = pixels[pos & PIXEL_MASK];
-    for (byte n = 0; n< 5; n++) {
+    for (byte n = 0; n < 5; n++) {
 	word screen = WORD(addr);
 	if (detect && (screen & data)) collision = 1;
 	WORD(addr) = screen ^ data;
