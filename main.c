@@ -704,6 +704,7 @@ static const struct Level level_list[] = {
     { level_maze, sizeof(level_maze), " {-MAZE-}" },
     { (byte *) blizzard, 0, " BLIZZARD" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
+    { level_fltr, sizeof(level_fltr), " F|||LTER" },
     { (byte *) castle, 0, " !CASTLE!" },
 };
 
