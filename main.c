@@ -761,7 +761,7 @@ static void finish_game(void) {
 
 static void end_game(void) {
     clear_screen();
-    put_str("GAME OVER", 11 + DENSITY * 4, 11, 5);
+    put_str("GAME OVER", 11, 11, 5);
     wait_for_button();
     main();
 }
