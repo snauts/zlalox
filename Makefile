@@ -4,7 +4,11 @@ CFLAGS += --code-loc $(CODE) --data-loc $(DATA)
 ENTRY = grep _main zlalox.map | cut -d " " -f 6
 
 all:
-	make cpc
+	@echo "make zxs" - build .tap for ZX Spectrum
+	@echo "make cpc" - build .dsk for Amstrad CPC
+	@echo "make cap" - build and run caprice
+	@echo "make fuse" - build and run fuse
+	@echo "make mame" - build and run mame
 
 dmp:
 	gcc $(TYPE) tga-dump.c -o tga-dump
@@ -32,17 +36,24 @@ cpc_bin: dmp_cpc
 
 zxs: zxs_bin
 	bin2tap -b -r $(shell printf "%d" 0x$$($(ENTRY))) zlalox.bin
+
+fuse: zxs
 	fuse --no-confirm-actions -g 2x zlalox.tap
 
 cpc: cpc_bin
 	iDSK -n zlalox.dsk
 	iDSK zlalox.dsk -f -t 1 -c 4000 -e $(shell $(ENTRY)) -i zlalox.bin
+
+mame: cpc
 	mame cpc6128 \
 		-window \
 		-skip_gameinfo \
 		-flop1 zlalox.dsk \
 		-autoboot_delay 1 \
 		-ab "RUN \"ZLALOX.BIN\"\n"
+
+cap: cpc
+	cap32 zlalox.dsk -a "RUN \"ZLALOX.BIN\""
 
 clean:
 	rm -f zlalox* level.h tga-dump
