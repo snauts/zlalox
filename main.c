@@ -858,12 +858,7 @@ static void game_loop(void) {
 
 #ifdef CPC
 static word mul80(word x) {
-    word ret = 0;
-    x = x << 3;
-    for (byte i = 0; i < 10; i++) {
-	ret += x;
-    }
-    return ret;
+    return (x << 6) + (x << 4);
 }
 #endif
 
