@@ -271,6 +271,7 @@ static void wait_for_button(void) {
     do { control(); } while (!dir);
 }
 
+static word score;
 static byte detect, collision;
 static void draw_straight(void) {
     word addr = PLAYER_ADDR + (pos >> POS_SHIFT);
@@ -367,7 +368,6 @@ static void cpc_level_finish_sound(void) {
 }
 #endif
 
-static word score;
 static void update_score(void) {
     put_num(score, 23, 21, 5);
 }
@@ -380,7 +380,6 @@ static void jerk_vblank(void) {
 #ifdef CPC
     cpc_level_finish_sound();
 #endif
-    update_score();
     while (!is_vsync()) {
 #ifdef ZXS
 	static const byte jerk_color[] = { 0, 1, 5, 7 };
@@ -884,13 +883,13 @@ static void death_loop(void) {
 }
 
 static void game_loop(void) {
-    update_score();
     wait_vblank();
     next_pattern(0);
     for (;;) {
 	control();
 	callback();
 	draw_player(1);
+	update_score();
 	game_vblank();
 	draw_player(0);
 	if (collision) {
