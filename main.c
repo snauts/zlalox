@@ -8,13 +8,13 @@
 #define BORDER	10
 
 #ifdef ZXS
+#define PROMPT			"Press Z or X"
 #define SETUP_SP()		__asm__("ld sp, #0xFDFC")
 #define READ_KEYS()		in_fe(0xfe)
 #define IRQ_BASE		0xfe00
 #define KEY_LEFT		0x02
 #define KEY_RIGHT		0x04
 #define TITLE_BUF		title
-#define TITLE_X			4
 #define DENSITY			0
 #define PIXEL_MAP		shift_R
 #define PLAYER_ADDR		0x5180
@@ -22,13 +22,13 @@
 #define is_vsync()		vblank
 #endif
 #ifdef CPC
+#define PROMPT			"Press X or C"
 #define SETUP_SP()		__asm__("ld sp, #0xa000")
 #define READ_KEYS()		cpc_keys()
 #define IRQ_BASE		0xa200
 #define KEY_LEFT		0x80
 #define KEY_RIGHT		0x40
 #define TITLE_BUF		title_cpc
-#define TITLE_X			16
 #define DENSITY			1
 #define PIXEL_MAP		pixel_map
 #define PLAYER_ADDR		0xCE40
@@ -744,12 +744,11 @@ static void show_life(void) {
 static void ice_castle(void);
 static void finish_game(void) {
     clear_screen();
-    byte offset = 4 * DENSITY;
-    put_str("Congratulations!", 8 + offset, 4, 5);
-    put_str("GAME COMPLETE", 9 + offset, 20, 5);
-    put_str("You are now", 4 + offset, 9, 5);
-    put_str("champion", 20 + offset, 15, 5);
-    display_title(TITLE_X, 10);
+    put_str("Congratulations!", 8, 4, 5);
+    put_str("GAME COMPLETE", 9, 20, 5);
+    put_str("You are now", 4, 9, 5);
+    put_str("champion", 20, 15, 5);
+    display_title(4, 10);
     ice_castle();
     main();
 }
@@ -917,6 +916,7 @@ static void prepare(void) {
 static void display_title(byte dx, byte dy) {
     word i = 0, j = 0;
     dy = dy << 3;
+    dx = SHIFT_PIXEL(dx);
     for (byte y = dy; y < dy + 40; y++) {
 	for (byte x = dx; x < dx + SHIFT_PIXEL(24); x++) {
 	    BYTE(map_y[y] + x) = TITLE_BUF[i++];
@@ -1010,13 +1010,8 @@ static void reset_variables(void) {
 }
 
 static void start_screen(void) {
-#ifdef ZXS
-    put_str("Press Z or X", 10, 16, 5);
-#endif
-#ifdef CPC
-    put_str("Press X or C", 14, 16, 1);
-#endif
-    display_title(TITLE_X, 8);
+    put_str(PROMPT, 10, 16, 5);
+    display_title(4, 8);
     wait_for_button();
 }
 
