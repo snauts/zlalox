@@ -675,15 +675,17 @@ static void release_bomb(short t, byte x) {
 }
 
 static void bombs(void) {
-    release_bomb(0,  40);
-    release_bomb(1,  40);
-    release_bomb(32, 20);
-    release_bomb(33, 20);
-    release_bomb(64, 60);
-    release_bomb(65, 60);
-    release_bomb(96, 30);
-    release_bomb(97, 30);
-    next_level(ticks > (192 + 100));
+    release_bomb(  0, 40);
+    release_bomb(  1, 40);
+    release_bomb( 32, 20);
+    release_bomb( 33, 20);
+    release_bomb( 64, 60);
+    release_bomb( 65, 60);
+    release_bomb( 96, 30);
+    release_bomb( 97, 30);
+    release_bomb(128, 50);
+    release_bomb(129, 50);
+    next_level(ticks > (192 + 144));
     ticks++;
 }
 
@@ -699,6 +701,7 @@ static const struct Level level_list[] = {
     { (byte *) gates, 0, " ^[GATE]^" },
     { level_berg, sizeof(level_berg), " ICE-BERG" },
     { (byte *) bombs, 0, " v*BOMB*v" },
+    { level_maze, sizeof(level_maze), " {-MAZE-}" },
     { (byte *) blizzard, 0, " BLIZZARD" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
     { (byte *) castle, 0, " !CASTLE!" },
