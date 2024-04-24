@@ -216,18 +216,17 @@ static void put_char(char symbol, byte x, byte y, byte color) {
     x = x << 1;
     word glyph = symbol - 0x20;
     const byte *addr = font_cpc + (glyph << 4);
-    for (byte i = 0; i < 16; i += 2) {
-	word pos = map_y[y++] + x;
-	BYTE(pos + 0) = addr[i + 0];
-	BYTE(pos + 1) = addr[i + 1];
+    for (byte i = 0; i < 8; i++) {
+	byte *ptr = map_y[y++] + x;
+	*(ptr++) = *(addr++);
+	*(ptr++) = *(addr++);
     }
 #endif
 }
 
 static void put_str(const char *msg, byte x, byte y, byte color) {
-    byte i = 0;
-    while (msg[i] != 0) {
-	put_char(msg[i++], x++, y, color);
+    while (*msg != 0) {
+	put_char(*(msg++), x++, y, color);
     }
 }
 
