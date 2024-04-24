@@ -662,6 +662,31 @@ static void castle(void) {
     ticks++;
 }
 
+static void release_bomb(short t, byte x) {
+    byte dx = 2;
+    short y = ticks - t;
+    if (y > 128) dx = y - 128;
+    byte hx = dx >> 1;
+    hail_stone(x + dx, y - 2);
+    hail_stone(x - dx, y - 2);
+    hail_stone(x + hx, y - 1);
+    hail_stone(x - hx, y - 1);
+    hail_stone(x, y);
+}
+
+static void bombs(void) {
+    release_bomb(0,  40);
+    release_bomb(1,  40);
+    release_bomb(32, 20);
+    release_bomb(33, 20);
+    release_bomb(64, 60);
+    release_bomb(65, 60);
+    release_bomb(96, 30);
+    release_bomb(97, 30);
+    next_level(ticks > (192 + 100));
+    ticks++;
+}
+
 static const struct Level level_list[] = {
     { level_snow, sizeof(level_snow), " GO.GO.GO" },
     { level_path, sizeof(level_path), " (BURROW)" },
@@ -673,6 +698,7 @@ static const struct Level level_list[] = {
     { level_inva, sizeof(level_inva), " CHAMBERS" },
     { (byte *) gates, 0, " ^[GATE]^" },
     { level_berg, sizeof(level_berg), " ICE-BERG" },
+    { (byte *) bombs, 0, " v*BOMB*v" },
     { (byte *) blizzard, 0, " BLIZZARD" },
     { level_diam, sizeof(level_diam), " DIAMONDS" },
     { (byte *) castle, 0, " !CASTLE!" },
