@@ -248,13 +248,13 @@ static char to_hex(byte digit) {
     return (digit < 10) ? '0' + digit : 'A' + digit - 10;
 }
 
-static void error_num(word num) {
+static void put_num(word num, byte x, byte y, byte color) {
     char msg[] = "0x0000";
     for (byte i = 5; i >= 2; i--) {
 	msg[i] = to_hex(num & 0xf);
 	num = num >> 4;
     }
-    error_str(msg);
+    put_str(msg, x, y, color);
 }
 
 static byte pos;
