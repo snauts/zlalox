@@ -129,6 +129,16 @@ static void setup_sys(void) {
     setup_irq(IRQ_BASE >> 8);
 
 #ifdef CPC
+    __asm__("ld bc, #0xbc0c");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xbd33");
+    __asm__("out (c), c");
+
+    __asm__("ld bc, #0xbc0d");
+    __asm__("out (c), c");
+    __asm__("ld bc, #0xbdd4");
+    __asm__("out (c), c");
+
     cpc_psg(7, 0xBC);
     cpc_psg(8, 0x00);
     for (byte i = 0; i < SIZE(gate_array_init); i++) {
