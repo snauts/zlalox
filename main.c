@@ -3,6 +3,7 @@
 
 #include "level.h"
 
+#define SCORE	3
 #define LIVES	5
 #define WIDTH	10
 #define BORDER	10
@@ -164,6 +165,10 @@ static void slow_pixel(byte x, byte y) {
     BYTE(map_y[y] + (x >> POS_SHIFT)) ^= PIXEL_MAP[x & PIXEL_MASK];
 }
 
+static byte is_pixel(byte x, byte y) {
+    return BYTE(map_y[y] + (x >> POS_SHIFT)) & PIXEL_MAP[x & PIXEL_MASK];
+}
+
 static void clear_screen(void) {
 #ifdef ZXS
     memset(0x4000, 0x00, 0x1B00);
@@ -217,7 +222,7 @@ static void put_char(char symbol, byte x, byte y, byte color) {
     word glyph = symbol - 0x20;
     const byte *addr = font_cpc + (glyph << 4);
     for (byte i = 0; i < 8; i++) {
-	byte *ptr = map_y[y++] + x;
+	byte *ptr = (byte *) (map_y[y++] + x);
 	*(ptr++) = *(addr++);
 	*(ptr++) = *(addr++);
     }
@@ -368,6 +373,10 @@ static void cpc_level_finish_sound(void) {
 #endif
 
 static void update_score(void) {
+    for (byte i = 1; i <= SCORE; i++) {
+	if (is_pixel(pos - i, 161)) score++;
+	if (is_pixel(pos + 2 + i, 161)) score++;
+    }
     put_num(score, 23, 21, 5);
 }
 
