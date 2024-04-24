@@ -207,6 +207,11 @@ static void track_border(void) {
 #endif
 }
 
+static byte skip;
+static inline byte skip_action(void) {
+    return skip && is_vsync();
+}
+
 static void put_char(char symbol, byte x, byte y, byte color) {
     y = y << 3;
 #ifdef ZXS
@@ -222,6 +227,7 @@ static void put_char(char symbol, byte x, byte y, byte color) {
     word glyph = symbol - 0x20;
     const byte *addr = font_cpc + (glyph << 4);
     for (byte i = 0; i < 8; i++) {
+	if (skip_action()) return;
 	byte *ptr = (byte *) (map_y[y++] + x);
 	*(ptr++) = *(addr++);
 	*(ptr++) = *(addr++);
@@ -231,6 +237,7 @@ static void put_char(char symbol, byte x, byte y, byte color) {
 
 static void put_str(const char *msg, byte x, byte y, byte color) {
     while (*msg != 0) {
+	if (skip_action()) return;
 	put_char(*(msg++), x++, y, color);
     }
 }
@@ -390,7 +397,10 @@ static void update_score(void) {
 	if (is_pixel(pos - i, 161)) score++;
 	if (is_pixel(pos + 2 + i, 161)) score++;
     }
+
+    skip = 1;
     put_dec(score, 24, 21, 5);
+    skip = 0;
 }
 
 static void jerk_vblank(void) {
@@ -1036,6 +1046,7 @@ static void reset_variables(void) {
     lives = LIVES;
     score = 0;
     level = 0;
+    skip = 0;
     err = 0;
 }
 
