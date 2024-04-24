@@ -3,7 +3,7 @@
 
 #include "level.h"
 
-#define SCORE	3
+#define SCORE	5
 #define LIVES	5
 #define WIDTH	10
 #define BORDER	10
