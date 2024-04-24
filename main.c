@@ -253,9 +253,9 @@ static char to_hex(byte digit) {
 }
 
 static void put_num(word num, byte x, byte y, byte color) {
-    char msg[] = "0x0000";
-    for (byte i = 5; i >= 2; i--) {
-	msg[i] = to_hex(num & 0xf);
+    char msg[] = "0000";
+    for (byte i = 0; i < 4; i++) {
+	msg[3 - i] = to_hex(num & 0xf);
 	num = num >> 4;
     }
     put_str(msg, x, y, color);
@@ -377,7 +377,7 @@ static void update_score(void) {
 	if (is_pixel(pos - i, 161)) score++;
 	if (is_pixel(pos + 2 + i, 161)) score++;
     }
-    put_num(score, 23, 21, 5);
+    put_num(score, 26, 21, 5);
 }
 
 static void jerk_vblank(void) {
@@ -1046,6 +1046,7 @@ static void clear_track(void) {
 }
 
 static void message_bar(void) {
+    put_str("[0xdead]", 23, 21, 5);
     put_row('-', 0, SIZE(level_list), 5, BORDER);
 }
 
