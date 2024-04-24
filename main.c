@@ -774,6 +774,7 @@ static void finish_game(void) {
     put_str("GAME COMPLETE", 9, 20, 5);
     put_str("You are now", 4, 9, 5);
     put_str("champion", 20, 15, 5);
+    put_dec(score, 13, 22, 5);
     display_title(4, 10);
     ice_castle();
     main();
