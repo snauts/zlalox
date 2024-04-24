@@ -195,3 +195,7 @@ static const byte pixel_map[] = {
     0x88, 0x44, 0x22, 0x11,
 };
 #endif
+
+static const word tens[] = {
+    10000, 1000, 100, 10, 1
+};

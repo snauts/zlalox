@@ -261,6 +261,17 @@ static void put_num(word num, byte x, byte y, byte color) {
     put_str(msg, x, y, color);
 }
 
+static void put_dec(word num, byte x, byte y, byte color) {
+    char msg[] = "00000";
+    for (byte i = 0; i < 5; i++) {
+	while (num >= tens[i]) {
+	    num -= tens[i];
+	    msg[i]++;
+	}
+    }
+    put_str(msg, x, y, color);
+}
+
 static byte pos;
 static int8 dir;
 static void control(void) {
@@ -769,6 +780,7 @@ static void finish_game(void) {
 static void end_game(void) {
     clear_screen();
     put_str("GAME OVER", 11, 11, 5);
+    put_dec(score, 13, 13, 5);
     wait_for_button();
     main();
 }
