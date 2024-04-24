@@ -267,6 +267,8 @@ static void put_dec(word num, byte x, byte y, byte color) {
     char msg[] = "00000";
     for (byte i = 0; i < 5; i++) {
 	while (num >= tens[i]) {
+	    /* too long skip score update this frame */
+	    if (is_vsync()) return;
 	    num -= tens[i];
 	    msg[i]++;
 	}
