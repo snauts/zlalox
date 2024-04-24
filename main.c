@@ -367,6 +367,11 @@ static void cpc_level_finish_sound(void) {
 }
 #endif
 
+static word score;
+static void update_score(void) {
+    put_num(score, 23, 21, 5);
+}
+
 static void jerk_vblank(void) {
     byte c = 0, s = 0;
     word i = 0, j = 0;
@@ -375,6 +380,7 @@ static void jerk_vblank(void) {
 #ifdef CPC
     cpc_level_finish_sound();
 #endif
+    update_score();
     while (!is_vsync()) {
 #ifdef ZXS
 	static const byte jerk_color[] = { 0, 1, 5, 7 };
@@ -878,6 +884,7 @@ static void death_loop(void) {
 }
 
 static void game_loop(void) {
+    update_score();
     wait_vblank();
     next_pattern(0);
     for (;;) {
@@ -1005,6 +1012,7 @@ static void ice_castle(void) {
 static void reset_variables(void) {
     init_variables();
     lives = LIVES;
+    score = 0;
     level = 0;
     err = 0;
 }
