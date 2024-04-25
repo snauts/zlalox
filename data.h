@@ -1,5 +1,5 @@
 #ifdef ZXS
-#define MTYPE byte
+typedef byte m_type;
 #define D4  145		// 293.7
 #define E4  128		// 329.6
 #define F4s 113		// 369.9
@@ -12,30 +12,25 @@
 #endif
 
 #ifdef CPC
-#define MTYPE word
+typedef word m_type;
+#define A2  568		// 110.0
+#define C3s 478		// 130.8
 #define F3  358		// 174.6
 #define F3s 338		// 185.0
+#define G3  319		// 196.0
 #define G3s 301		// 207.6
 #define A3  284		// 220.0
 #define B3  254		// 246.9
 #define C4s 266		// 277.1
 #define D4  213		// 293.7
 #define E4  190		// 329.6
-#define F4  179		// 349.2
 #define F4s 169		// 369.9
 #define G4  159		// 392.0
 #define G4s 150		// 415.3
 #define A4  142		// 440.0
-#define A4s 134		// 466.1
 #define B4  127		// 493.9
 #define C5s 113		// 554.4
 #define D5  106		// 587.3
-#define D5s 100		// 622.2
-#define F5  89		// 698.4
-#define E5  95		// 659.2
-#define A5  71		// 880.0
-#define A5s 67		// 932.3
-#define B5  63		// 987.7
 #define PP  0
 #endif
 
@@ -45,7 +40,7 @@
 #define L8  12
 #define L16  6
 
-static const MTYPE music[] = {
+static const m_type music[] = {
     A4,  L8,  D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
     G4,  L8,  E4,  L8,  G4,  L8, G4,  L8, F4s, L8, A4, L8, A4, L4,
     A4,  L8 , D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
@@ -75,7 +70,7 @@ static const MTYPE music[] = {
 // 𝅘𝅥 - L4, 𝅘𝅥𝅮 - L8, 𝅘𝅥𝅯 - L16
 
 #ifdef CPC
-static const word chord1[] = {
+static const m_type chord1[] = {
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
     E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, D4, L8, F4s, L8,
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
@@ -87,15 +82,16 @@ static const word chord1[] = {
     F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  A3,  L8, A3,  L8, A3, L4,
     0, 0
 };
-static const word chord2[] = {
-    B5,  L2, A5s, L2,
-    A5s, L8, F5,  L8, A5s, L8,  F5,  L8, B5,  L8,  F5,  L8, B5,  L8,  F5,  L8,
-    B5,  L2, A5s, L2,
-    A5s, L8, F5,  L8, A5s, L8,  F5,  L8, F5,  L8,  D5s, L8, D5s, L4,
-    D5s, L4, D5s, L4, E5,  L8,  E5,  L8, E5,  L4,
-    A4s, L4, A4s, L4, D5s, L4,  D5s, L4,
-    D5s, L4, D5s, L4, E5,  L8,  E5,  L8, E5,  L4,
-    A4s, L4, A4s, L4, D5s, L8,  D5s, L8, F5,  L8,  F4, L8,
+static const m_type chord2[] = {
+    D4,  L2, C4s, L2,
+    C4s, L8, A3,  L8, C4s, L8,  A3,  L8, D4,  L8,  A3,  L8, D4,  L8,  A3,  L8,
+    D4,  L2, C4s, L2,
+    C4s, L8, A3,  L8, C4s, L8,  A3,  L8, A3,  L8,  F3s, L8, F3s, L4,
+
+    F3s, L4, F3s, L4, G3,  L8,  G3,  L8, G3,  L4,
+    C3s, L4, C3s, L4, F3s, L4,  F3s, L4,
+    F3s, L4, F3s, L4, G3,  L8,  G3,  L8, G3,  L4,
+    C3s, L4, C3s, L4, F3s, L8,  F3s, L8, A3,  L8,  A2, L8,
     0, 0
 };
 #endif
