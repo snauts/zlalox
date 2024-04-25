@@ -491,7 +491,7 @@ static void hail_stone(short x, short y) {
 static void blizzard(void) {
     byte rows = 0;
     short height = ticks;
-    while (height >= 0 && rows < 32) {
+    while (counter == 0 && height >= 0 && rows < 32) {
 	short x = ticks + hail_offset[rows];
 	hail_stone(x - 1, height - 1);
 	hail_stone(x, height);
@@ -505,7 +505,7 @@ static void blizzard(void) {
 static void snower(void) {
     byte rows = 0;
     short height = ticks;
-    if (ticks < 385) {
+    if (counter == 0) {
 	while (height >= 0 && rows < 24) {
 	    byte x = snow_offset[rows];
 	    byte offset = x + height;
