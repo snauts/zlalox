@@ -724,16 +724,18 @@ static void release_bomb(short t, byte x) {
 }
 
 static void bombs(void) {
-    release_bomb(  0, 40);
-    release_bomb(  1, 40);
-    release_bomb( 32, 20);
-    release_bomb( 33, 20);
-    release_bomb( 64, 60);
-    release_bomb( 65, 60);
-    release_bomb( 96, 30);
-    release_bomb( 97, 30);
-    release_bomb(128, 50);
-    release_bomb(129, 50);
+    if (counter == 0) {
+	release_bomb(  1, 40);
+	release_bomb(  2, 40);
+	release_bomb( 32, 20);
+	release_bomb( 33, 20);
+	release_bomb( 64, 60);
+	release_bomb( 65, 60);
+	release_bomb( 96, 30);
+	release_bomb( 97, 30);
+	release_bomb(128, 50);
+	release_bomb(129, 50);
+    }
     next_level(ticks > (192 + 144));
     ticks++;
 }
