@@ -14,14 +14,14 @@ typedef byte m_type;
 #ifdef CPC
 typedef word m_type;
 #define A2  568		// 110.0
-#define C3s 478		// 130.8
+#define C3s 451		// 138.5
 #define F3  358		// 174.6
 #define F3s 338		// 185.0
 #define G3  319		// 196.0
 #define G3s 301		// 207.6
 #define A3  284		// 220.0
 #define B3  254		// 246.9
-#define C4s 266		// 277.1
+#define C4s 226		// 277.1
 #define D4  213		// 293.7
 #define E4  190		// 329.6
 #define F4s 169		// 369.9
@@ -72,7 +72,7 @@ static const m_type music[] = {
 #ifdef CPC
 static const m_type chord1[] = {
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
-    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, D4, L8, F4s, L8,
+    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, F4s, L8, D4, L8,
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
     E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, A3,  L8, A3, L8, PP,  L8,
 
