@@ -688,13 +688,13 @@ static void castle(void) {
 	draw_corner(y - 8, level);
 	draw_crown();
     }
-    else if (ticks == 976 || ticks == 1008 || ticks == 1040) {
+    else if (ticks == 976 || ticks == 1024 || ticks == 1072) {
 	counter = 192;
     }
     else if (counter > 0 && counter <= 224) {
 	counter++;
     }
-    if (ticks == 1080) {
+    if (ticks == 1120) {
 	finish_game();
     }
     ticks++;
