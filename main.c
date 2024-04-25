@@ -1035,11 +1035,10 @@ static void ice_castle(void) {
     const word *tune[3] = { music, chord1, chord2 };
 
     byte decay[3];
-    byte octave = 0;
     byte duration[3];
     word period[3];
 
-    for (byte i = 0; i < 1; i++) {
+    for (byte i = 0; i < 3; i++) {
 	decay[i] = 9;
 	duration[i] = 0;
 	period[i] = tune[i][0];
@@ -1057,14 +1056,11 @@ static void ice_castle(void) {
 		if (duration[i] >= tune[i][1]) {
 		    tune[i] += 2;
 		    if (tune[i][1] == 0) {
-			if (i == 0) octave = (octave + 3) & 3;
 			tune[i] = base[i];
 		    }
 		    decay[i] = tune[i][1] == L16 ? 3 : 9;
-		    period[i] = tune[i][0] << octave;
-		    if (period[i]) {
-			cpc_play_note(period[i], 0xf, i);
-		    }
+		    period[i] = tune[i][0];
+		    cpc_play_note(period[i], 0xf, i);
 		    duration[i] = 0;
 		}
 	    }
