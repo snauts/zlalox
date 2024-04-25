@@ -270,15 +270,26 @@ static void put_num(word num, byte x, byte y, byte color) {
 }
 #endif
 
-static void put_dec(word num, byte x, byte y) {
-    char msg[] = "00000";
-    for (byte i = 0; i < 5; i++) {
-	while (num >= tens[i]) {
-	    num -= tens[i];
-	    msg[i]++;
+static char score[6];
+static void init_score(void) {
+    memset((word) score, '0', 5);
+    score[5] = 0;
+}
+
+static void put_score(byte x, byte y) {
+    put_str(score, x, y, 5);
+}
+
+static void inc_score(void) {
+    for (signed char i = 4; i >= 0; i--) {
+	if (score[i] >= '9') {
+	    score[i] = '0';
+	}
+	else {
+	    score[i]++;
+	    return;
 	}
     }
-    put_str(msg, x, y, 5);
 }
 
 static byte pos;
@@ -295,7 +306,6 @@ static void wait_for_button(void) {
     do { control(); } while (!dir);
 }
 
-static word score;
 static byte detect, collision;
 static void draw_straight(void) {
     word addr = PLAYER_ADDR + (pos >> POS_SHIFT);
@@ -394,12 +404,12 @@ static void cpc_level_finish_sound(void) {
 
 static void update_score(void) {
     for (byte i = 1; i <= SCORE; i++) {
-	if (is_pixel(pos - i, 161)) score++;
-	if (is_pixel(pos + 2 + i, 161)) score++;
+	if (is_pixel(pos - i, 161)) inc_score();
+	if (is_pixel(pos + 2 + i, 161)) inc_score();
     }
 
     skip = 1;
-    put_dec(score, 24, 21);
+    put_score(24, 21);
     skip = 0;
 }
 
@@ -778,7 +788,7 @@ static void finish_game(void) {
     put_str("GAME COMPLETE", 9, 20, 5);
     put_str("You are now", 4, 9, 5);
     put_str("champion", 20, 15, 5);
-    put_dec(score, 13, 22);
+    put_score(13, 22);
     display_title(4, 10);
     ice_castle();
     main();
@@ -787,7 +797,7 @@ static void finish_game(void) {
 static void end_game(void) {
     clear_screen();
     put_str("GAME OVER", 11, 11, 5);
-    put_dec(score, 13, 13);
+    put_score(13, 13);
     wait_for_button();
     main();
 }
@@ -1107,7 +1117,7 @@ static void ice_castle(void) {
 static void reset_variables(void) {
     init_variables();
     lives = LIVES;
-    score = 0;
+    init_score();
     level = 0;
     skip = 0;
     err = 0;
