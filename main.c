@@ -109,7 +109,8 @@ static byte cpc_psg(byte reg, byte val) __naked {
 #endif
 
 static void memset(word addr, byte data, word len) {
-    while (len-- > 0) { BYTE(addr++) = data; }
+    byte *ptr = (byte *) addr;
+    while (len-- > 0) { *ptr++ = data; }
 }
 
 static void __sdcc_call_hl(void) __naked {
