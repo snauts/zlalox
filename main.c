@@ -215,9 +215,9 @@ static inline byte skip_action(void) {
 static void put_char(char symbol, byte x, byte y, byte color) {
     y = y << 3;
 #ifdef ZXS
-    word addr = 0x3C00 + (symbol << 3);
+    byte *addr = (byte *) 0x3C00 + (symbol << 3);
     for (byte i = 0; i < 8; i++) {
-	BYTE(map_y[y + i] + x) = BYTE(addr + i);
+	BYTE(map_y[y + i] + x) = *addr++;
     }
     BYTE(0x5800 + (y << 2) + x) = color;
 #endif
