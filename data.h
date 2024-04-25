@@ -199,3 +199,10 @@ static const byte pixel_map[] = {
 static const word tens[] = {
     10000, 1000, 100, 10, 1
 };
+
+#ifdef ZXS
+    static const byte jerk_color[] = { 0x00, 0x01, 0x05, 0x07 };
+#endif
+#ifdef CPC
+    static const byte jerk_color[] = { 0x54, 0x53, 0x57, 0x4B };
+#endif

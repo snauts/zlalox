@@ -404,41 +404,31 @@ static void update_score(void) {
 }
 
 static void jerk_vblank(void) {
-    byte c = 0, s = 0;
-    word i = 0, j = 0;
-    word period = (224 - counter) >> 1;
-    word width = (counter - 192) << 3;
+    byte sound = 0, interval = 0;
+    byte period = (224 - counter) >> 1;
+    byte color = jerk_color[(counter - 1) & 3];
 #ifdef CPC
     cpc_level_finish_sound();
 #endif
     while (!is_vsync()) {
 #ifdef ZXS
-	static const byte jerk_color[] = { 0, 1, 5, 7 };
-	out_fe(jerk_color[c] | s);
+	out_fe(color | sound);
 #endif
-#ifdef CPC
-	static const byte jerk_color[] = { 0x54, 0x53, 0x57, 0x4B };
-	gate_array(0x10);
-	gate_array(jerk_color[c]);
-#endif
-	if (i == width) {
-	    c = (c + 1) & 3;
-	    i = 0;
+	if (interval == period) {
+	    sound ^= 0x10;
+	    interval = 0;
 	}
-	if (j == period) {
-	    s ^= 0x10;
-	    j = 0;
-	}
-	j++;
-	i++;
+	interval++;
     }
     vblank = 0;
-#ifdef ZXS
-    out_fe(0);
-#endif
+
+    color = jerk_color[counter & 3];
 #ifdef CPC
     gate_array(0x10);
-    gate_array(0x54);
+    gate_array(color);
+#endif
+#ifdef ZXS
+    out_fe(color | sound);
 #endif
 }
 
