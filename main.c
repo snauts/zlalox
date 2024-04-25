@@ -608,6 +608,7 @@ static void draw_mover(word offset, byte exit) {
     short y = ticks - offset;
     set_row(y, 0xff);
     set_row(y - 4, 0);
+    exit = SHIFT_PIXEL(exit);
 
     if (y < 192) {
 	word addr = map_y[y];
