@@ -36,6 +36,7 @@
 #define A5  71		// 880.0
 #define A5s 67		// 932.3
 #define B5  63		// 987.7
+#define PP  0
 #endif
 
 #define L2  48
@@ -78,7 +79,8 @@ static const word chord1[] = {
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
     E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, D4, L8, F4s, L8,
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
-    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, A3,  L8, A3, L8, 0,   L8,
+    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, A3,  L8, A3, L8, PP,  L8,
+
     A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3, L8, D4,  L8,
     F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  F3s, L8, D4,  L8, A3, L8, D4,
     A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3, L8, D4,
