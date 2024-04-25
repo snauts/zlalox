@@ -1040,11 +1040,15 @@ static void cpc_play_note(struct Channel *channel) {
     cpc_psg(8 + number, channel->volume);
 }
 
+static byte melody;
 static void next_note(struct Channel *channel) {
     const m_type *tune = channel->tune;
     if (tune[1] == 0) {
 	tune = channel->base;
 	channel->tune = tune;
+	if (channel->num == 0) {
+	    melody++;
+	}
     }
     channel->decay = tune[1] >> 1;
     channel->period = tune[0];
@@ -1052,7 +1056,8 @@ static void next_note(struct Channel *channel) {
     channel->volume = 0xf;
     if (channel->num > 0) {
 	channel->volume -= 3;
-	channel->period <<= 1;
+	byte mask = channel->num == 2 ? 3 : 1;
+	channel->period <<= (melody & mask);
     }
 
     cpc_play_note(channel);
@@ -1080,6 +1085,7 @@ static void ice_castle(void) {
     const m_type *base[] = { music, chord1, chord2 };
     struct Channel channels[SIZE(base)];
 
+    melody = 0;
     for (byte i = 0; i < 3; i++) {
 	channels[i].num = i;
 	init_channel(channels + i, base[i]);
