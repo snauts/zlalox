@@ -270,7 +270,7 @@ static void put_num(word num, byte x, byte y, byte color) {
 }
 #endif
 
-static void put_dec(word num, byte x, byte y, byte color) {
+static void put_dec(word num, byte x, byte y) {
     char msg[] = "00000";
     for (byte i = 0; i < 5; i++) {
 	while (num >= tens[i]) {
@@ -278,7 +278,7 @@ static void put_dec(word num, byte x, byte y, byte color) {
 	    msg[i]++;
 	}
     }
-    put_str(msg, x, y, color);
+    put_str(msg, x, y, 5);
 }
 
 static byte pos;
@@ -399,7 +399,7 @@ static void update_score(void) {
     }
 
     skip = 1;
-    put_dec(score, 24, 21, 5);
+    put_dec(score, 24, 21);
     skip = 0;
 }
 
@@ -778,7 +778,7 @@ static void finish_game(void) {
     put_str("GAME COMPLETE", 9, 20, 5);
     put_str("You are now", 4, 9, 5);
     put_str("champion", 20, 15, 5);
-    put_dec(score, 13, 22, 5);
+    put_dec(score, 13, 22);
     display_title(4, 10);
     ice_castle();
     main();
@@ -787,7 +787,7 @@ static void finish_game(void) {
 static void end_game(void) {
     clear_screen();
     put_str("GAME OVER", 11, 11, 5);
-    put_dec(score, 13, 13, 5);
+    put_dec(score, 13, 13);
     wait_for_button();
     main();
 }
