@@ -505,14 +505,16 @@ static void blizzard(void) {
 static void snower(void) {
     byte rows = 0;
     short height = ticks;
-    while (height >= 0 && rows < 24) {
-	byte x = snow_offset[rows];
-	byte offset = x + height;
-	hail_stone(x + swirl[offset & 0x1f], height);
-	offset--;
-	hail_stone(x + swirl[offset & 0x1f], height - 1);
-	height -= 8;
-	rows++;
+    if (ticks < 385) {
+	while (height >= 0 && rows < 24) {
+	    byte x = snow_offset[rows];
+	    byte offset = x + height;
+	    hail_stone(x + swirl[offset & 0x1f], height);
+	    offset--;
+	    hail_stone(x + swirl[offset & 0x1f], height - 1);
+	    height -= 8;
+	    rows++;
+	}
     }
     next_level(height > 192);
     ticks++;
