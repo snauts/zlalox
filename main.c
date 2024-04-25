@@ -1059,6 +1059,9 @@ static void next_note(struct Channel *channel) {
 	byte mask = channel->num == 2 ? 3 : 1;
 	channel->period <<= (melody & mask);
     }
+    else if (melody & 1) {
+	channel->decay += tune[1] >> 3;
+    }
 
     cpc_play_note(channel);
 }
