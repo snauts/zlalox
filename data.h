@@ -34,6 +34,7 @@
 #define A5  71		// 880.0
 #define A5s 67		// 932.3
 #define B5  63		// 987.7
+#endif
 
 #define L2  48
 #define L4  24
@@ -70,15 +71,16 @@ static const byte music[] = {
 
 // 𝅘𝅥 - L4, 𝅘𝅥𝅮 - L8, 𝅘𝅥𝅯 - L16
 
+#ifdef CPC
 static const word chord1[] = {
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
-    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, D4,  L8, F4s, L8,
+    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, D4, L8, F4s, L8,
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
-    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, A3,  L8, A3,  L8, 0,   L8,
-    A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3,  L8, D4,  L8,
-    F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  F3s, L8, D4,  L8, L8,  A3, L8,  D4,
-    A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, L8,  B3, L8,  D4,
-    F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  A3,  L8, A3,  L8, A3,  L4,
+    E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, A3,  L8, A3, L8, 0,   L8,
+    A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3, L8, D4,  L8,
+    F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  F3s, L8, D4,  L8, A3, L8, D4,
+    A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3, L8, D4,
+    F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  A3,  L8, A3,  L8, A3, L4,
     0, 0
 };
 static const word chord2[] = {
