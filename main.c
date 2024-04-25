@@ -159,14 +159,14 @@ static byte in_fe(byte a) __naked {
 }
 #endif
 
-static word map_y[192];
+static byte *map_y[192];
 
 static void slow_pixel(byte x, byte y) {
-    BYTE(map_y[y] + (x >> POS_SHIFT)) ^= PIXEL_MAP[x & PIXEL_MASK];
+    map_y[y][x >> POS_SHIFT] ^= PIXEL_MAP[x & PIXEL_MASK];
 }
 
 static byte is_pixel(byte x, byte y) {
-    return BYTE(map_y[y] + (x >> POS_SHIFT)) & PIXEL_MAP[x & PIXEL_MASK];
+    return map_y[y][x >> POS_SHIFT] & PIXEL_MAP[x & PIXEL_MASK];
 }
 
 static void clear_screen(void) {
@@ -196,13 +196,13 @@ static void track_border(void) {
 #endif
 #ifdef CPC
     for (byte y = 0; y < 192; y++) {
-	word addr = map_y[y];
+	byte *addr = map_y[y];
 	addr += SHIFT_PIXEL(BORDER);
-	BYTE(addr++) = 0x03;
-	BYTE(addr++) = 0xF3;
+	*addr++ = 0x03;
+	*addr++ = 0xF3;
 	addr += SHIFT_PIXEL(WIDTH);
-	BYTE(addr++) = 0xFC;
-	BYTE(addr++) = 0x0C;
+	*addr++ = 0xFC;
+	*addr++ = 0x0C;
     }
 #endif
 }
@@ -217,7 +217,7 @@ static void put_char(char symbol, byte x, byte y, byte color) {
 #ifdef ZXS
     byte *addr = (byte *) 0x3C00 + (symbol << 3);
     for (byte i = 0; i < 8; i++) {
-	BYTE(map_y[y + i] + x) = *addr++;
+	map_y[y + i][x] = *addr++;
     }
     BYTE(0x5800 + (y << 2) + x) = color;
 #endif
@@ -228,9 +228,9 @@ static void put_char(char symbol, byte x, byte y, byte color) {
     const byte *addr = font_cpc + (glyph << 4);
     for (byte i = 0; i < 8; i++) {
 	if (skip_action()) return;
-	byte *ptr = (byte *) (map_y[y++] + x);
-	*(ptr++) = *(addr++);
-	*(ptr++) = *(addr++);
+	byte *ptr = map_y[y++] + x;
+	*ptr++ = *addr++;
+	*ptr++ = *addr++;
     }
 #endif
 }
@@ -473,9 +473,9 @@ static void next_level(byte is_ending) {
 
 static void set_row(short y, byte data) {
     if (0 <= y && y < 192) {
-	word addr = map_y[y] + (11 << DENSITY);
+	byte *addr = map_y[y] + (11 << DENSITY);
 	for (byte x = 0; x < (WIDTH << DENSITY); x++) {
-	    BYTE(addr++) = data;
+	    *addr++ = data;
 	}
     }
 }
@@ -563,20 +563,20 @@ static void draw_wall(byte offset, byte exit) {
     set_row(y - 4, 0);
     if (y >= 96 && y < 192) {
 	byte i = y < 104 ? (y & 7) : 7;
-	word addr = map_y[y] + SHIFT_PIXEL(exit);
+	byte *addr = map_y[y] + SHIFT_PIXEL(exit);
 #if DENSITY == 0
-	BYTE(addr + 1) = gate_R[i];
-	BYTE(addr + 0) = gate_L[i];
+	addr[0] = gate_L[i];
+	addr[1] = gate_R[i];
 #else
 	if (i < 4) {
-	    BYTE(addr + 2) = gate_R[i];
-	    BYTE(addr + 1) = gate_L[i];
+	    addr[2] = gate_R[i];
+	    addr[1] = gate_L[i];
 	}
 	else {
-	    BYTE(addr + 3) = gate_R[i - 4];
-	    BYTE(addr + 2) = 0;
-	    BYTE(addr + 1) = 0;
-	    BYTE(addr + 0) = gate_L[i - 4];
+	    addr[0] = gate_L[i - 4];
+	    addr[1] = 0;
+	    addr[2] = 0;
+	    addr[3] = gate_R[i - 4];
 	}
 #endif
     }
@@ -612,7 +612,7 @@ static void draw_mover(word offset, byte exit) {
     exit = SHIFT_PIXEL(exit);
 
     if (y < 192) {
-	word addr = map_y[y];
+	byte *addr = map_y[y];
 	byte x, i = ((y >> 1) & PIXEL_MASK);
 	byte move = (ticks >> (4 - DENSITY)) + exit;
 	byte offset = (move & ((8 << DENSITY) - 1));
@@ -624,7 +624,7 @@ static void draw_mover(word offset, byte exit) {
 	    x = SHIFT_PIXEL(18) - offset + DENSITY;
 	    i = PIXEL_MASK - i;
 	}
-	mover_gate((byte *) (addr + x), i);
+	mover_gate(addr + x, i);
     }
 }
 
@@ -641,22 +641,22 @@ static void movers(void) {
 static void draw_corner(short y, byte level) {
     for (byte i = 0; i < 9; i++) {
 	if (y >= 0 && y < 192) {
-	    word addr = map_y[y];
+	    byte *addr = map_y[y];
 	    byte b1 = 0xff, b2 = 0xff;
 #if DENSITY == 0
 	    if (i > 0) {
 		b1 = gate_L[i - 1];
 		b2 = gate_R[i - 1];
 	    }
-	    BYTE(addr + SHIFT_PIXEL(level + 11)) = b1;
-	    BYTE(addr + SHIFT_PIXEL(20 - level) + DENSITY) = b2;
+	    addr[SHIFT_PIXEL(level + 11)] = b1;
+	    addr[SHIFT_PIXEL(20 - level) + DENSITY] = b2;
 #else
 	    if (i > 4) {
 		b1 = gate_L[i - 5];
 		b2 = gate_R[i - 5];
 	    }
-	    BYTE(addr + SHIFT_PIXEL(level + 11)) = b1;
-	    BYTE(addr + SHIFT_PIXEL(20 - level) + DENSITY) = b2;
+	    addr[SHIFT_PIXEL(level + 11)] = b1;
+	    addr[SHIFT_PIXEL(20 - level) + DENSITY] = b2;
 
 	    b1 = b2 = i > 0 ? 0x00 : 0xff;
 
@@ -664,8 +664,8 @@ static void draw_corner(short y, byte level) {
 		b1 = gate_L[i - 1];
 		b2 = gate_R[i - 1];
 	    }
-	    BYTE(addr + SHIFT_PIXEL(level + 11) + DENSITY) = b1;
-	    BYTE(addr + SHIFT_PIXEL(20 - level)) = b2;
+	    addr[SHIFT_PIXEL(level + 11) + DENSITY] = b1;
+	    addr[SHIFT_PIXEL(20 - level)] = b2;
 #endif
 	}
 	y++;
@@ -677,9 +677,9 @@ static void draw_crown(void) {
     byte step = (2 << DENSITY);
     for (byte i = 0; i < SIZE(crown); i += step) {
 	if (y >= 0 && y < 192) {
-	    word addr = map_y[y];
+	    byte *addr = map_y[y] + SHIFT_PIXEL(15);
 	    for (byte x = 0; x < step; x++) {
-		BYTE(addr + x + SHIFT_PIXEL(15)) = crown[i + x];
+		*addr++ = crown[i + x];
 	    }
 	}
 	y++;
@@ -764,8 +764,9 @@ static void put_skii_mask(byte dx, byte dy) {
     dy = dy << 3;
     dx = SHIFT_PIXEL(dx);
     for (byte y = dy; y < dy + 6; y++) {
-	for (byte x = dx; x < dx + SHIFT_PIXEL(3); x++) {
-	    BYTE(map_y[y] + x) = skii_mask[i++];
+	byte *addr = map_y[y] + dx;
+	for (byte x = 0; x < SHIFT_PIXEL(3); x++) {
+	    *addr++ = skii_mask[i++];
 	}
     }
 #ifdef ZXS
@@ -853,7 +854,7 @@ static void scroll(void) {
     byte y = counter;
     byte *addr;
     while (y < 192 && x > 0) {
-	addr = (byte *) map_y[y] + x;
+	addr = map_y[y] + x;
 	*addr = *(++ptr);
 	y += *(++ptr);
 	x = *(++ptr);
@@ -948,11 +949,11 @@ static void prepare(void) {
     for (byte y = 0; y < 192; y++) {
 #ifdef ZXS
 	byte f = ((y & 7) << 3) | ((y >> 3) & 7) | (y & 0xC0);
-	map_y[y] = 0x4000 + (f << 5);
+	map_y[y] = (byte *) (0x4000 + (f << 5));
 #endif
 #ifdef CPC
 	word f = ((y & 7) << 11) | mul80(y >> 3);
-	map_y[y] = 0xC000 + f;
+	map_y[y] = (byte *) (0xC000 + f);
 #endif
     }
 }
@@ -962,8 +963,9 @@ static void display_title(byte dx, byte dy) {
     dy = dy << 3;
     dx = SHIFT_PIXEL(dx);
     for (byte y = dy; y < dy + 40; y++) {
-	for (byte x = dx; x < dx + SHIFT_PIXEL(24); x++) {
-	    BYTE(map_y[y] + x) = TITLE_BUF[i++];
+	byte *addr = map_y[y] + dx;
+	for (byte x = 0; x < SHIFT_PIXEL(24); x++) {
+	    *addr++ = TITLE_BUF[i++];
 	}
     }
 #ifdef ZXS
@@ -1132,7 +1134,7 @@ static void start_screen(void) {
 
 static void clear_rectangle(byte x1, byte y1, byte x2, byte y2) {
     for (byte y = y1; y < y2; y++) {
-	byte *addr = (byte *) (map_y[y] + x1);
+	byte *addr = map_y[y] + x1;
 	for (byte x = x1; x < x2; x++) {
 	    *(addr++) = 0;
 	}
