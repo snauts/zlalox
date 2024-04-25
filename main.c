@@ -1046,10 +1046,14 @@ static void next_note(struct Channel *channel) {
 	tune = channel->base;
 	channel->tune = tune;
     }
-    channel->decay = tune[1] == L16 ? 3 : 9;
+    channel->decay = tune[1] >> 1;
     channel->period = tune[0];
     channel->duration = 0;
     channel->volume = 0xf;
+    if (channel->num > 0) {
+	channel->volume -= 3;
+	channel->period <<= 1;
+    }
 
     cpc_play_note(channel);
 }
@@ -1063,7 +1067,7 @@ static void init_channel(struct Channel *channel, const word *base) {
 static void advance_channel(struct Channel *channel) {
     byte duration = ++channel->duration;
     if (duration >= channel->decay) {
-	channel->volume = 0x0;
+	channel->volume >>= 1;
 	cpc_play_note(channel);
     }
     if (duration >= channel->tune[1]) {
