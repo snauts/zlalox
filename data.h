@@ -82,8 +82,8 @@ static const word chord1[] = {
     E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, A3,  L8, A3, L8, PP,  L8,
 
     A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3, L8, D4,  L8,
-    F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  F3s, L8, D4,  L8, A3, L8, D4,
-    A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3, L8, D4,
+    F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  F3s, L8, D4,  L8, A3, L8, D4,  L8,
+    A3,  L8,  D4,  L8,  A3,  L8,  D4,  L8,  B3,  L8, D4,  L8, B3, L8, D4,  L8,
     F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  A3,  L8, A3,  L8, A3, L4,
     0, 0
 };
