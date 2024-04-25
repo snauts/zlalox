@@ -280,8 +280,8 @@ static void put_score(byte x, byte y) {
     put_str(score, x, y, 5);
 }
 
-static void inc_score(void) {
-    for (signed char i = 4; i >= 0; i--) {
+static void inc_score(byte amount) {
+    for (signed char i = 4 - amount; i >= 0; i--) {
 	if (score[i] >= '9') {
 	    score[i] = '0';
 	}
@@ -404,8 +404,8 @@ static void cpc_level_finish_sound(void) {
 
 static void update_score(void) {
     for (byte i = 1; i <= SCORE; i++) {
-	if (is_pixel(pos - i, 161)) inc_score();
-	if (is_pixel(pos + 2 + i, 161)) inc_score();
+	if (is_pixel(pos - i, 161)) inc_score(0);
+	if (is_pixel(pos + 2 + i, 161)) inc_score(0);
     }
 
     skip = 1;
@@ -815,6 +815,7 @@ static void (*callback)(void);
 static void next_pattern(byte inc) {
     counter = 0;
     level += inc;
+    if (inc > 0) inc_score(3);
     if (SIZE(level_list) == level) finish_game();
     const struct Level *next = level_list + level;
     if (next->size > 0) {
