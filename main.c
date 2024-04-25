@@ -437,7 +437,7 @@ static void jerk_vblank(void) {
     gate_array(color);
 #endif
 #ifdef ZXS
-    out_fe(color | sound);
+    out_fe(color);
 #endif
 }
 
