@@ -1115,6 +1115,11 @@ static void ice_castle(void) {
 	    }
 	}
     }
+
+    /* mute channels */
+    for (byte i = 0; i < 3; i++) {
+        cpc_psg(8 + i, 0);
+    }
 }
 #endif
 
