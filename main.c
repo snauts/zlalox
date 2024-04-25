@@ -421,8 +421,7 @@ static void jerk_vblank(void) {
 	interval++;
     }
     vblank = 0;
-
-    color = jerk_color[counter & 3];
+    color = jerk_color[counter < 224 ? (counter & 3) : 0];
 #ifdef CPC
     gate_array(0x10);
     gate_array(color);
