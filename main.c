@@ -140,7 +140,7 @@ static void setup_sys(void) {
     __asm__("ld bc, #0xbdd4");
     __asm__("out (c), c");
 
-    cpc_psg(7, 0xBC);
+    cpc_psg(7, 0xB8);
     cpc_psg(8, 0x00);
     for (byte i = 0; i < SIZE(gate_array_init); i++) {
 	gate_array(gate_array_init[i]);
@@ -991,11 +991,9 @@ static void cpc_play_note(word frequency, byte volume, byte channel) {
     }
     cpc_psg(8 + channel, volume);
 }
-#define PLAY_NOTE(f, v, c) cpc_play_note(f, v, c)
-#else
-#define PLAY_NOTE(f, v, c)
 #endif
 
+#ifdef ZXS
 static void ice_castle(void) {
     const byte *tune = music;
 
@@ -1004,20 +1002,16 @@ static void ice_castle(void) {
     byte duration = 0;
     word period = tune[0];
 
-    PLAY_NOTE(period, 0xf, 0);
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
-#ifdef ZXS
 	if (period > 0) {
 	    out_fe(0x10);
 	    delay(period);
 	    out_fe(0x00);
 	    delay(period);
 	}
-#endif
 	if (is_vblank_start()) {
 	    duration++;
 	    if (duration >= decay) {
-		PLAY_NOTE(0, 0x10, 0);
 		period = 0;
 	    }
 	    if (duration >= tune[1]) {
@@ -1028,12 +1022,56 @@ static void ice_castle(void) {
 		}
 		decay = tune[1] == L16 ? 3 : 9;
 		period = tune[0] << octave;
-		PLAY_NOTE(period, 0xf, 0);
 		duration = 0;
 	    }
 	}
     }
 }
+#endif
+
+#ifdef CPC
+static void ice_castle(void) {
+    const word *base[3] = { music, chord1, chord2 };
+    const word *tune[3] = { music, chord1, chord2 };
+
+    byte decay[3];
+    byte octave = 0;
+    byte duration[3];
+    word period[3];
+
+    for (byte i = 0; i < 1; i++) {
+	decay[i] = 9;
+	duration[i] = 0;
+	period[i] = tune[i][0];
+	cpc_play_note(period[i], 0xf, i);
+    }
+
+    while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
+	if (is_vblank_start()) {
+	    for (byte i = 0; i < 3; i++) {
+		duration[i]++;
+		if (duration[i] >= decay[i]) {
+		    cpc_play_note(period[i], 0x10, i);
+		    period[i] = 0;
+		}
+		if (duration[i] >= tune[i][1]) {
+		    tune[i] += 2;
+		    if (tune[i][1] == 0) {
+			if (i == 0) octave = (octave + 3) & 3;
+			tune[i] = base[i];
+		    }
+		    decay[i] = tune[i][1] == L16 ? 3 : 9;
+		    period[i] = tune[i][0] << octave;
+		    if (period[i]) {
+			cpc_play_note(period[i], 0xf, i);
+		    }
+		    duration[i] = 0;
+		}
+	    }
+	}
+    }
+}
+#endif
 
 static void reset_variables(void) {
     init_variables();

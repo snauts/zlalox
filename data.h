@@ -1,4 +1,5 @@
 #ifdef ZXS
+#define MTYPE byte
 #define D4  145		// 293.7
 #define E4  128		// 329.6
 #define F4s 113		// 369.9
@@ -11,6 +12,7 @@
 #endif
 
 #ifdef CPC
+#define MTYPE word
 #define F3  358		// 174.6
 #define F3s 338		// 185.0
 #define G3s 301		// 207.6
@@ -42,7 +44,7 @@
 #define L8  12
 #define L16  6
 
-static const byte music[] = {
+static const MTYPE music[] = {
     A4,  L8,  D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
     G4,  L8,  E4,  L8,  G4,  L8, G4,  L8, F4s, L8, A4, L8, A4, L4,
     A4,  L8 , D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
