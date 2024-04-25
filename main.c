@@ -982,17 +982,6 @@ static byte is_vblank_start(void) {
 #endif
 }
 
-#ifdef CPC
-static void cpc_play_note(word frequency, byte volume, byte channel) {
-    if (frequency > 0) {
-	byte offset = (channel << 1);
-	cpc_psg(0 + offset, frequency & 0xff);
-	cpc_psg(1 + offset, frequency >> 8);
-    }
-    cpc_psg(8 + channel, volume);
-}
-#endif
-
 #ifdef ZXS
 static void ice_castle(void) {
     const byte *tune = music;
@@ -1030,39 +1019,72 @@ static void ice_castle(void) {
 #endif
 
 #ifdef CPC
-static void ice_castle(void) {
-    const word *base[3] = { music, chord1, chord2 };
-    const word *tune[3] = { music, chord1, chord2 };
+struct Channel {
+    const m_type *base;
+    const m_type *tune;
+    byte duration;
+    word period;
+    byte volume;
+    byte decay;
+    byte num;
+};
 
-    byte decay[3];
-    byte duration[3];
-    word period[3];
+static void cpc_play_note(struct Channel *channel) {
+    byte number = channel->num;
+    word period = channel->period;
+    if (period > 0) {
+	byte offset = (number << 1);
+	cpc_psg(0 + offset, period & 0xff);
+	cpc_psg(1 + offset, period >> 8);
+    }
+    cpc_psg(8 + number, channel->volume);
+}
+
+static void next_note(struct Channel *channel) {
+    const m_type *tune = channel->tune;
+    if (tune[1] == 0) {
+	tune = channel->base;
+	channel->tune = tune;
+    }
+    channel->decay = tune[1] == L16 ? 3 : 9;
+    channel->period = tune[0];
+    channel->duration = 0;
+    channel->volume = 0xf;
+
+    cpc_play_note(channel);
+}
+
+static void init_channel(struct Channel *channel, const word *base) {
+    channel->base = base;
+    channel->tune = base;
+    next_note(channel);
+}
+
+static void advance_channel(struct Channel *channel) {
+    byte duration = ++channel->duration;
+    if (duration >= channel->decay) {
+	channel->volume = 0x0;
+	cpc_play_note(channel);
+    }
+    if (duration >= channel->tune[1]) {
+	channel->tune += 2;
+	next_note(channel);
+    }
+}
+
+static void ice_castle(void) {
+    const m_type *base[] = { music, chord1, chord2 };
+    struct Channel channels[SIZE(base)];
 
     for (byte i = 0; i < 3; i++) {
-	decay[i] = 9;
-	duration[i] = 0;
-	period[i] = tune[i][0];
-	cpc_play_note(period[i], 0xf, i);
+	channels[i].num = i;
+	init_channel(channels + i, base[i]);
     }
 
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
 	if (is_vblank_start()) {
 	    for (byte i = 0; i < 3; i++) {
-		duration[i]++;
-		if (duration[i] >= decay[i]) {
-		    cpc_play_note(period[i], 0x10, i);
-		    period[i] = 0;
-		}
-		if (duration[i] >= tune[i][1]) {
-		    tune[i] += 2;
-		    if (tune[i][1] == 0) {
-			tune[i] = base[i];
-		    }
-		    decay[i] = tune[i][1] == L16 ? 3 : 9;
-		    period[i] = tune[i][0];
-		    cpc_play_note(period[i], 0xf, i);
-		    duration[i] = 0;
-		}
+		advance_channel(channels + i);
 	    }
 	}
     }
