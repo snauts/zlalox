@@ -631,7 +631,7 @@ static void movers(void) {
     draw_mover(  0,  0);
     draw_mover( 64,  6);
     draw_mover(128, 14);
-    draw_mover(192, 18);
+    draw_mover(192, 17);
     draw_mover(256,  8);
     next_level(ticks > 256 + 192 + 16);
     ticks++;
