@@ -1000,31 +1000,43 @@ static byte is_vblank_start(void) {
 static void ice_castle(void) {
     const byte *tune = music;
 
+    byte wave = 0;
+    byte type = 0;
     byte decay = 9;
-    byte octave = 0;
     byte duration = 0;
-    word period = tune[0];
+    word period = *tune;
 
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
 	if (period > 0) {
 	    out_fe(0x10);
-	    delay(period);
+	    delay(period + duration);
 	    out_fe(0x00);
-	    delay(period);
+	    delay(period - duration);
+
+	    if (type == 1) {
+		byte shift = wave & 1;
+		period = (wave & 2)
+		    ? *tune >> shift
+		    : *tune << shift;
+		wave++;
+	    }
 	}
 	if (is_vblank_start()) {
 	    duration++;
 	    if (duration >= decay) {
 		period = 0;
 	    }
+	    else if (type == 0) {
+		period = *tune << (duration & 1);
+	    }
 	    if (duration >= tune[1]) {
 		tune += 2;
 		if (tune[1] == 0) {
-		    octave = (octave + 3) & 3;
+		    type = !type;
 		    tune = music;
 		}
-		decay = tune[1] == L16 ? 3 : 9;
-		period = tune[0] << octave;
+		decay = tune[1] >> 1;
+		period = *tune;
 		duration = 0;
 	    }
 	}
