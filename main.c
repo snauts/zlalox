@@ -1032,7 +1032,7 @@ static void ice_castle(void) {
 	    if (duration >= tune[1]) {
 		tune += 2;
 		if (tune[1] == 0) {
-		    type = !type;
+		    if (++type == 3) type = 0;
 		    tune = music;
 		}
 		decay = tune[1] >> 1;
