@@ -1072,7 +1072,7 @@ static void next_note(struct Channel *channel) {
     if (tune[1] == 0) {
 	tune = channel->base;
 	channel->tune = tune;
-	if (channel->num == 0) {
+	if (channel->num == 1) {
 	    melody++;
 	}
     }
@@ -1080,7 +1080,7 @@ static void next_note(struct Channel *channel) {
     channel->period = tune[0];
     channel->duration = 0;
     channel->volume = 0xf;
-    if (channel->num > 0) {
+    if (channel->num != 1) {
 	channel->volume -= 3;
 	byte mask = channel->num == 2 ? 3 : 1;
 	channel->period <<= (melody & mask);
@@ -1111,7 +1111,7 @@ static void advance_channel(struct Channel *channel) {
 }
 
 static void ice_castle(void) {
-    const m_type *base[] = { music, chord1, chord2 };
+    const m_type *base[] = { chord1, music, chord2 };
     struct Channel channels[SIZE(base)];
 
     melody = 0;
