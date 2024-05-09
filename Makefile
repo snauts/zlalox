@@ -6,6 +6,7 @@ ENTRY = grep _main zlalox.map | cut -d " " -f 6
 all:
 	@echo "make zxs" - build .tap for ZX Spectrum
 	@echo "make cpc" - build .dsk for Amstrad CPC
+	@echo "make cdt" - build .cdt for Amstrad CPC
 	@echo "make cap" - build and run caprice
 	@echo "make fuse" - build and run fuse
 	@echo "make mame" - build and run mame
@@ -43,6 +44,11 @@ fuse: zxs
 cpc: cpc_bin
 	iDSK -n zlalox.dsk
 	iDSK zlalox.dsk -f -t 1 -c 4000 -e $(shell $(ENTRY)) -i zlalox.bin
+
+cdt: cpc_bin
+	2cdt -n -P -t 0 -F 2 -L 0x4000 -X 0x$(shell $(ENTRY)) \
+		-r zlalox zlalox.bin zlalox.cdt
+#	cap32 zlalox.cdt -a "|TAPE" -a "RUN\"\""
 
 mame: cpc
 	mame cpc6128 \
