@@ -33,7 +33,7 @@ cpc_bin: dmp_cpc
 	./tga-dump -c skii_mask.tga >> level.h
 	./tga-dump -f font_cpc.tga >> level.h
 	./tga-dump -c crown.tga >> level.h
-	CODE=0x4000 DATA=0x9000	TYPE=-DCPC make prg
+	CODE=0x1000 DATA=0x6000	TYPE=-DCPC make prg
 
 zxs: zxs_bin
 	bin2tap -b -r $(shell printf "%d" 0x$$($(ENTRY))) zlalox.bin
@@ -43,12 +43,12 @@ fuse: zxs
 
 cpc: cpc_bin
 	iDSK -n zlalox.dsk
-	iDSK zlalox.dsk -f -t 1 -c 4000 -e $(shell $(ENTRY)) -i zlalox.bin
+	iDSK zlalox.dsk -f -t 1 -c 1000 -e $(shell $(ENTRY)) -i zlalox.bin
 
 cdt: cpc_bin
-	2cdt -n -P -t 0 -F 2 -L 0x4000 -X 0x$(shell $(ENTRY)) \
+	2cdt -n -P -t 0 -F 2 -L 0x1000 -X 0x$(shell $(ENTRY)) \
 		-r zlalox zlalox.bin zlalox.cdt
-#	cap32 zlalox.cdt -a "|TAPE" -a "RUN\"\""
+#	cap32 zlalox.cdt -O system.model=0 -a "RUN\"\""
 
 mame: cpc
 	mame cpc6128 \

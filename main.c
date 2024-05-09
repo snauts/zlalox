@@ -24,9 +24,9 @@
 #endif
 #ifdef CPC
 #define PROMPT			"Press X or C"
-#define SETUP_SP()		__asm__("ld sp, #0xa000")
+#define SETUP_SP()		__asm__("ld sp, #0x7000")
 #define READ_KEYS()		cpc_keys()
-#define IRQ_BASE		0xa200
+#define IRQ_BASE		0x7200
 #define KEY_LEFT		0x80
 #define KEY_RIGHT		0x40
 #define TITLE_BUF		title_cpc
