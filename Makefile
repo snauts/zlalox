@@ -48,7 +48,6 @@ cpc: cpc_bin
 cdt: cpc_bin
 	2cdt -n -P -t 0 -F 2 -L 0x1000 -X 0x$(shell $(ENTRY)) \
 		-r zlalox zlalox.bin zlalox.cdt
-#	cap32 zlalox.cdt -O system.model=0 -a "RUN\"\""
 
 mame: cpc
 	mame cpc6128 \
@@ -58,8 +57,8 @@ mame: cpc
 		-autoboot_delay 1 \
 		-ab "RUN \"ZLALOX.BIN\"\n"
 
-cap: cpc
-	cap32 zlalox.dsk -a "RUN \"ZLALOX.BIN\""
+cap: cdt
+	cap32 zlalox.cdt -O system.model=0 -a "RUN\"\""
 
 clean:
 	rm -f zlalox* level.h tga-dump
