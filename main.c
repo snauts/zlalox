@@ -1025,6 +1025,14 @@ static void cpc_fade_note(struct Channel *channel) {
 #endif
 
 static byte melody;
+static byte shift_octave(struct Channel *channel) {
+#ifdef ZXS
+    return (channel->num == 0 || (melody & channel->num) != 0);
+#else
+    return (channel->num != 0 && (melody & channel->num) == 0);
+#endif
+}
+
 static void next_note(struct Channel *channel) {
     const word *tune = channel->tune;
     if (tune[1] == 0) {
@@ -1038,7 +1046,7 @@ static void next_note(struct Channel *channel) {
     channel->silent = channel->decay;
     channel->period = tune[0];
 
-    if (channel->num == 0 || (melody & channel->num)) {
+    if (shift_octave(channel)) {
 	channel->period <<= 1;
     }
 #ifdef CPC
@@ -1121,11 +1129,7 @@ static void beeper(struct Channel *channel) {
 }
 
 static void ice_castle(void) {
-#ifdef CPC
-    const word *base[] = { chord1, music, chord2 };
-#else
     const word *base[] = { music, chord1, chord2 };
-#endif
     struct Channel channels[SIZE(base)];
 
     melody = 0;
