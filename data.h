@@ -1,22 +1,16 @@
 #ifdef ZXS
-#define NOTE(x) ((2407.0 * x) / 440.0)
-
-#define L2  16
-#define L4   8
-#define L8D  6
-#define L8   4
-#define L16  2
+#define NOTE(x) ((2400.0 * x) / 440.0)
 #endif
 
 #ifdef CPC
 #define NOTE(x) (1000000.0 / (16.0 * x))
+#endif
 
 #define L2  48
 #define L4  24
 #define L8D 18
 #define L8  12
 #define L16  6
-#endif
 
 #define A2  NOTE(110.0)
 #define C3s NOTE(138.5)
