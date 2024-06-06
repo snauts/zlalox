@@ -1,14 +1,30 @@
 #ifdef ZXS
-typedef byte m_type;
-#define D4  145		// 293.7
-#define E4  128		// 329.6
-#define F4s 113		// 369.9
-#define G4  108		// 392.0
-#define G4s 100		// 415.3
-#define A4  95		// 440.0
-#define B4  83		// 493.9
-#define C5s 73		// 554.4
-#define D5  68		// 587.3
+typedef word m_type;
+#define A2  671		// 110.0
+#define C3s 845		// 138.5
+#define F3  1065	// 174.6
+#define F3s 1128	// 185.0
+#define G3  1195	// 196.0
+#define G3s 1266	// 207.6
+#define A3  1342	// 220.0
+#define B3  1506	// 246.9
+#define C4s 1690	// 277.1
+#define D4  1791	// 293.7
+#define E4  2010	// 329.6
+#define F4s 2256	// 369.9
+#define G4  2390	// 392.0
+#define G4s 2532	// 415.3
+#define A4  2683	// 440.0
+#define B4  3012	// 493.9
+#define C5s 3381	// 554.4
+#define D5  3581	// 587.3
+#define PP  0
+
+#define L2  16
+#define L4   8
+#define L8D  6
+#define L8   4
+#define L16  2
 #endif
 
 #ifdef CPC
@@ -32,13 +48,13 @@ typedef word m_type;
 #define C5s 113		// 554.4
 #define D5  106		// 587.3
 #define PP  0
-#endif
 
 #define L2  48
 #define L4  24
 #define L8D 18
 #define L8  12
 #define L16  6
+#endif
 
 static const m_type music[] = {
     A4,  L8,  D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
@@ -69,7 +85,6 @@ static const m_type music[] = {
 
 // 𝅘𝅥 - L4, 𝅘𝅥𝅮 - L8, 𝅘𝅥𝅯 - L16
 
-#ifdef CPC
 static const m_type chord1[] = {
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
     E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, F4s, L8, D4, L8,
@@ -94,7 +109,6 @@ static const m_type chord2[] = {
     C3s, L4, C3s, L4, F3s, L8,  F3s, L8, A3,  L8,  A2, L8,
     0, 0
 };
-#endif
 
 #ifdef ZXS
 static const word pixels[] = {

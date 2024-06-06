@@ -996,55 +996,6 @@ static byte is_vblank_start(void) {
 #endif
 }
 
-#ifdef ZXS
-static void ice_castle(void) {
-    const byte *tune = music;
-
-    byte wave = 0;
-    byte type = 0;
-    byte decay = 9;
-    byte duration = 0;
-    word period = *tune;
-
-    while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
-	if (period > 0) {
-	    out_fe(0x10);
-	    delay(period + duration);
-	    out_fe(0x00);
-	    delay(period - duration);
-
-	    if (type == 1) {
-		byte shift = wave & 1;
-		period = (wave & 2)
-		    ? *tune >> shift
-		    : *tune << shift;
-		wave++;
-	    }
-	}
-	if (is_vblank_start()) {
-	    duration++;
-	    if (duration >= decay) {
-		period = 0;
-	    }
-	    else if (type == 0) {
-		period = *tune << (duration & 1);
-	    }
-	    if (duration >= tune[1]) {
-		tune += 2;
-		if (tune[1] == 0) {
-		    if (++type == 3) type = 0;
-		    tune = music;
-		}
-		decay = tune[1] >> 1;
-		period = *tune;
-		duration = 0;
-	    }
-	}
-    }
-}
-#endif
-
-#ifdef CPC
 struct Channel {
     const m_type *base;
     const m_type *tune;
@@ -1055,6 +1006,7 @@ struct Channel {
     byte num;
 };
 
+#ifdef CPC
 static void cpc_play_note(struct Channel *channel) {
     byte number = channel->num;
     word period = channel->period;
@@ -1065,6 +1017,7 @@ static void cpc_play_note(struct Channel *channel) {
     }
     cpc_psg(8 + number, channel->volume);
 }
+#endif
 
 static byte melody;
 static void next_note(struct Channel *channel) {
@@ -1080,6 +1033,7 @@ static void next_note(struct Channel *channel) {
     channel->period = tune[0];
     channel->duration = 0;
     channel->volume = 0xf;
+#ifdef CPC
     if (channel->num != 1) {
 	channel->volume -= 3;
 	byte mask = channel->num == 2 ? 3 : 1;
@@ -1090,6 +1044,7 @@ static void next_note(struct Channel *channel) {
     }
 
     cpc_play_note(channel);
+#endif
 }
 
 static void init_channel(struct Channel *channel, const word *base) {
@@ -1101,13 +1056,47 @@ static void init_channel(struct Channel *channel, const word *base) {
 static void advance_channel(struct Channel *channel) {
     byte duration = ++channel->duration;
     if (duration >= channel->decay) {
+#ifdef CPC
 	channel->volume >>= 1;
 	cpc_play_note(channel);
+#else
+	channel->volume = 0;
+#endif
     }
     if (duration >= channel->tune[1]) {
 	channel->tune += 2;
 	next_note(channel);
     }
+}
+
+static void beeper(struct Channel *channel) {
+    channel;
+
+#ifdef ZXS
+    byte v0 = channel[0].volume;
+    word p0 = channel[0].period;
+    word c0 = 0;
+
+    byte v1 = channel[1].volume;
+    word p1 = channel[1].period << 1;
+    word c1 = 0;
+
+    byte v2 = channel[2].volume;
+    word p2 = channel[2].period;
+    word c2 = 0;
+
+    __asm__("di");
+    for (word i = 0; i < 300; i++) {
+	c0 += p0;
+	out_fe(c0 >= 32768 && v0 > 0 ? 0x10 : 0x00);
+	c1 += p1;
+	out_fe(c1 >= 32768 && v1 > 0 ? 0x10 : 0x00);
+	c2 += p2;
+	out_fe(c2 >= 32768 && v2 > 0 ? 0x10 : 0x00);
+    }
+    __asm__("ei");
+    vblank = 1;
+#endif
 }
 
 static void ice_castle(void) {
@@ -1121,6 +1110,7 @@ static void ice_castle(void) {
     }
 
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
+	beeper(channels);
 	if (is_vblank_start()) {
 	    for (byte i = 0; i < 3; i++) {
 		advance_channel(channels + i);
@@ -1128,12 +1118,13 @@ static void ice_castle(void) {
 	}
     }
 
+#ifdef CPC
     /* mute channels */
     for (byte i = 0; i < 3; i++) {
         cpc_psg(8 + i, 0);
     }
-}
 #endif
+}
 
 static void reset_variables(void) {
     init_variables();
