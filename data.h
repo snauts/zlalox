@@ -1,5 +1,5 @@
 #ifdef ZXS
-#define NOTE(x) ((2683.0 * x) / 440.0)
+#define NOTE(x) ((2407.0 * x) / 440.0)
 
 #define L2  16
 #define L4   8

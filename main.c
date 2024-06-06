@@ -1064,7 +1064,7 @@ static void advance_channel(struct Channel *channel) {
 	channel->volume >>= 1;
 	cpc_play_note(channel);
 #else
-	channel->volume = 0;
+	channel->period = 0;
 #endif
     }
     if (duration >= channel->tune[1]) {
@@ -1077,26 +1077,23 @@ static void beeper(struct Channel *channel) {
     channel;
 
 #ifdef ZXS
-    byte v0 = channel[0].volume;
     word p0 = channel[0].period;
     word c0 = 0;
 
-    byte v1 = channel[1].volume;
     word p1 = channel[1].period;
     word c1 = 0;
 
-    byte v2 = channel[2].volume;
     word p2 = channel[2].period;
     word c2 = 0;
 
     __asm__("di");
     for (word i = 0; i < 300; i++) {
 	c0 += p0;
-	out_fe(c0 >= 32768 && v0 > 0 ? 0x10 : 0x00);
+	out_fe(c0 >= 32768 ? 0x10 : 0x00);
 	c1 += p1;
-	out_fe(c1 >= 32768 && v1 > 0 ? 0x10 : 0x00);
+	out_fe(c1 >= 32768 ? 0x10 : 0x00);
 	c2 += p2;
-	out_fe(c2 >= 32768 && v2 > 0 ? 0x10 : 0x00);
+	out_fe(c2 >= 32768 ? 0x10 : 0x00);
     }
     __asm__("ei");
     vblank = 1;
