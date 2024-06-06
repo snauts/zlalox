@@ -1038,7 +1038,7 @@ static void next_note(struct Channel *channel) {
     if (tune[1] == 0) {
 	tune = channel->base;
 	channel->tune = tune;
-	if (channel->num == 1) {
+	if (channel->num == 0) {
 	    melody++;
 	}
     }
@@ -1110,7 +1110,7 @@ static void beeper(struct Channel *channel) {
 
     __asm__("di");
     for (byte i = 0; i < pause; i++) {
-	for (byte j = 0; j < 120; j++) {
+	for (byte j = 0; j < 110; j++) {
 	    c0 += p0;
 	    out_fe(c0 >= 32768 ? 0x10 : 0x00);
 	    c1 += p1;
@@ -1139,7 +1139,6 @@ static void ice_castle(void) {
 	init_channel(channels + i, base[i]);
     }
 
-    pause = 0xff;
     while ((READ_KEYS() & KEY_BOTH) == KEY_BOTH) {
 	beeper(channels);
 	for (byte i = 0; i < 3; i++) {
