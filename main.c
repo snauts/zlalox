@@ -1062,6 +1062,7 @@ static void init_channel(struct Channel *channel, const word *base) {
 
 static byte pause;
 static void update_pause(struct Channel *channel) {
+    pause = 0xff;
     for (byte i = 0; i < 3; i++) {
 	byte decay = channel[i].decay;
 	byte silent = channel[i].silent;
