@@ -997,8 +997,8 @@ static byte is_vblank_start(void) {
 }
 
 struct Channel {
-    const m_type *base;
-    const m_type *tune;
+    const word *base;
+    const word *tune;
     byte duration;
     word period;
     byte volume;
@@ -1021,7 +1021,7 @@ static void cpc_play_note(struct Channel *channel) {
 
 static byte melody;
 static void next_note(struct Channel *channel) {
-    const m_type *tune = channel->tune;
+    const word *tune = channel->tune;
     if (tune[1] == 0) {
 	tune = channel->base;
 	channel->tune = tune;
@@ -1105,9 +1105,9 @@ static void beeper(struct Channel *channel) {
 
 static void ice_castle(void) {
 #ifdef CPC
-    const m_type *base[] = { chord1, music, chord2 };
+    const word *base[] = { chord1, music, chord2 };
 #else
-    const m_type *base[] = { music, chord1, chord2 };
+    const word *base[] = { music, chord1, chord2 };
 #endif
     struct Channel channels[SIZE(base)];
 

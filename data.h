@@ -1,24 +1,5 @@
 #ifdef ZXS
-typedef word m_type;
-#define A2  671		// 110.0
-#define C3s 845		// 138.5
-#define F3  1065	// 174.6
-#define F3s 1128	// 185.0
-#define G3  1195	// 196.0
-#define G3s 1266	// 207.6
-#define A3  1342	// 220.0
-#define B3  1506	// 246.9
-#define C4s 1690	// 277.1
-#define D4  1791	// 293.7
-#define E4  2010	// 329.6
-#define F4s 2256	// 369.9
-#define G4  2390	// 392.0
-#define G4s 2532	// 415.3
-#define A4  2683	// 440.0
-#define B4  3012	// 493.9
-#define C5s 3381	// 554.4
-#define D5  3581	// 587.3
-#define PP  0
+#define NOTE(x) ((2683.0 * x) / 440.0)
 
 #define L2  16
 #define L4   8
@@ -28,26 +9,7 @@ typedef word m_type;
 #endif
 
 #ifdef CPC
-typedef word m_type;
-#define A2  568		// 110.0
-#define C3s 451		// 138.5
-#define F3  358		// 174.6
-#define F3s 338		// 185.0
-#define G3  319		// 196.0
-#define G3s 301		// 207.6
-#define A3  284		// 220.0
-#define B3  254		// 246.9
-#define C4s 226		// 277.1
-#define D4  213		// 293.7
-#define E4  190		// 329.6
-#define F4s 169		// 369.9
-#define G4  159		// 392.0
-#define G4s 150		// 415.3
-#define A4  142		// 440.0
-#define B4  127		// 493.9
-#define C5s 113		// 554.4
-#define D5  106		// 587.3
-#define PP  0
+#define NOTE(x) (1000000.0 / (16.0 * x))
 
 #define L2  48
 #define L4  24
@@ -56,7 +18,27 @@ typedef word m_type;
 #define L16  6
 #endif
 
-static const m_type music[] = {
+#define A2  NOTE(110.0)
+#define C3s NOTE(138.5)
+#define F3  NOTE(174.6)
+#define F3s NOTE(185.0)
+#define G3  NOTE(196.0)
+#define G3s NOTE(207.6)
+#define A3  NOTE(220.0)
+#define B3  NOTE(246.9)
+#define C4s NOTE(277.1)
+#define D4  NOTE(293.7)
+#define E4  NOTE(329.6)
+#define F4s NOTE(369.9)
+#define G4  NOTE(392.0)
+#define G4s NOTE(415.3)
+#define A4  NOTE(440.0)
+#define B4  NOTE(493.9)
+#define C5s NOTE(554.4)
+#define D5  NOTE(587.3)
+#define PP  0
+
+static const word music[] = {
     A4,  L8,  D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
     G4,  L8,  E4,  L8,  G4,  L8, G4,  L8, F4s, L8, A4, L8, A4, L4,
     A4,  L8 , D4,  L8,  F4s, L4, F4s, L8, E4,  L4, E4, L8,
@@ -85,7 +67,7 @@ static const m_type music[] = {
 
 // 𝅘𝅥 - L4, 𝅘𝅥𝅮 - L8, 𝅘𝅥𝅯 - L16
 
-static const m_type chord1[] = {
+static const word chord1[] = {
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
     E4,  L8,  C4s, L8,  E4,  L8,  C4s, L8,  D4,  L8, F4s, L8, F4s, L8, D4, L8,
     F4s, L4,  A4,  L8,  A3,  L8,  E4,  L4,  G4,  L8, A3,  L8,
@@ -97,7 +79,7 @@ static const m_type chord1[] = {
     F3,  L8,  B3,  L8,  G3s, L8,  B3,  L8,  A3,  L8, A3,  L8, A3, L4,
     0, 0
 };
-static const m_type chord2[] = {
+static const word chord2[] = {
     D4,  L2, C4s, L2,
     C4s, L8, A3,  L8, C4s, L8,  A3,  L8, D4,  L8,  A3,  L8, D4,  L8,  A3,  L8,
     D4,  L2, C4s, L2,
