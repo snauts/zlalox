@@ -1030,15 +1030,25 @@ static void next_note(struct Channel *channel) {
 	}
     }
     channel->decay = tune[1] >> 1;
+#ifdef CPC
     channel->period = tune[0];
+#else
+    channel->period = tune[0] << 1;
+#endif
     channel->duration = 0;
     channel->volume = 0xf;
-#ifdef CPC
     if (channel->num != 1) {
+#ifdef CPC
 	channel->volume -= 3;
 	byte mask = channel->num == 2 ? 3 : 1;
 	channel->period <<= (melody & mask);
+#else
+	if (channel->num == (melody & 3)) {
+	    channel->period >>= 1;
+	}
+#endif
     }
+#ifdef CPC
     else if (melody & 1) {
 	channel->decay += tune[1] >> 3;
     }
@@ -1078,7 +1088,7 @@ static void beeper(struct Channel *channel) {
     word c0 = 0;
 
     byte v1 = channel[1].volume;
-    word p1 = channel[1].period << 1;
+    word p1 = channel[1].period;
     word c1 = 0;
 
     byte v2 = channel[2].volume;
