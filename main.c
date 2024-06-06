@@ -1030,30 +1030,24 @@ static void next_note(struct Channel *channel) {
 	}
     }
     channel->decay = tune[1] >> 1;
-#ifdef CPC
-    channel->period = tune[0];
-#else
-    channel->period = tune[0] << 1;
-#endif
     channel->duration = 0;
     channel->volume = 0xf;
-    if (channel->num != 1) {
+    channel->period = tune[0];
 #ifdef CPC
+    if (channel->num != 1) {
 	channel->volume -= 3;
 	byte mask = channel->num == 2 ? 3 : 1;
 	channel->period <<= (melody & mask);
-#else
-	if (channel->num == (melody & 3)) {
-	    channel->period >>= 1;
-	}
-#endif
     }
-#ifdef CPC
     else if (melody & 1) {
 	channel->decay += tune[1] >> 3;
     }
 
     cpc_play_note(channel);
+#else
+    if (channel->num == 0 || (melody & channel->num)) {
+	channel->period <<= 1;
+    }
 #endif
 }
 
@@ -1110,7 +1104,11 @@ static void beeper(struct Channel *channel) {
 }
 
 static void ice_castle(void) {
+#ifdef CPC
     const m_type *base[] = { chord1, music, chord2 };
+#else
+    const m_type *base[] = { music, chord1, chord2 };
+#endif
     struct Channel channels[SIZE(base)];
 
     melody = 0;
