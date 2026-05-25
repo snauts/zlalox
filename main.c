@@ -44,6 +44,10 @@
 
 void main(void);
 
+static void start_up(void) __naked {
+    __asm__("jp _main");
+}
+
 static volatile byte vblank;
 static void interrupt(void) __naked {
 #ifdef ZXS

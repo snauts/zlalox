@@ -22,7 +22,7 @@ prg:
 	@$(foreach F, $(wildcard level/*), ./tga-dump -l $(F) >> level.h;)
 	@echo compile zlalox with sdcc
 	@sdcc $(CFLAGS) $(TYPE) main.c -o zlalox.ihx
-	hex2bin zlalox.ihx > /dev/null
+	@makebin -p -yo A -o $(CODE) zlalox.ihx zlalox.bin
 
 zxs_bin: dmp
 	./tga-dump -b title.tga > level.h
@@ -36,7 +36,8 @@ cpc_bin: dmp_cpc
 	CODE=0x1000 DATA=0x6000	TYPE=-DCPC make prg
 
 zxs: zxs_bin
-	bin2tap -b -r $(shell printf "%d" 0x$$($(ENTRY))) zlalox.bin
+	@gcc bin2tap.c -o bin2tap
+	@./bin2tap zlalox.bin zlalox.tap
 
 fuse: zxs
 	fuse --no-confirm-actions -g 2x zlalox.tap
