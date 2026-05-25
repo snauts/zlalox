@@ -177,6 +177,7 @@ static byte is_pixel(byte x, byte y) {
 static void clear_screen(void) {
 #ifdef ZXS
     memset(0x4000, 0x00, 0x1B00);
+    out_fe(0);
 #endif
 #ifdef CPC
     memset(0xC000, 0x00, 0x4000);
